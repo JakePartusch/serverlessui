@@ -17,19 +17,21 @@ const main = async () => {
   const functions = args["--functions"] || "./functions";
   const dir = args["--dir"] || "./dist";
 
-  const files = glob.sync(`${functions}/**/*.ts`);
+  const files = glob.sync(`${functions}/**/*.{js,ts}`);
 
   const apiFiles = files.join(",");
+  const applicationFile = `${__dirname}/application.js`;
+  const domainCli = domain ? `-c domainName=${domain}` : "";
 
   child_process.execSync(
-    `cdk synth -c domainName=${domain} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node node_modules/@jakepartusch/notlify/bin/application.js" --quiet`,
+    `cdk synth ${domainCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${applicationFile}" --quiet`,
     {
       stdio: "inherit",
     }
   );
 
   child_process.execSync(
-    `cdk deploy -c domainName=${domain} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node node_modules/@jakepartusch/notlify/bin/application.js" --require-approval never`,
+    `cdk deploy ${domainCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${applicationFile}" --require-approval never`,
     {
       stdio: "inherit",
     }

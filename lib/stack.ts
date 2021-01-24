@@ -31,6 +31,7 @@ import * as path from "path";
 interface ApplicationStackProps extends StackProps {
   buildId?: string;
   domainName?: string;
+  zoneId?: string;
   apiEntries: string[];
   uiEntry: string;
 }
@@ -40,9 +41,9 @@ export class ApplicationStack extends Stack {
     super(scope, id, props);
 
     let hostedZone, certificate;
-    if (props.domainName) {
+    if (props.domainName && props.zoneId) {
       hostedZone = HostedZone.fromHostedZoneAttributes(this, "HostedZone", {
-        hostedZoneId: "Z03627292WZKGOOSA618D",
+        hostedZoneId: props.zoneId,
         zoneName: props.domainName,
       });
 

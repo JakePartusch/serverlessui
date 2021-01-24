@@ -14,10 +14,12 @@ const nanoid = customAlphabet("0123456789abcdef", 8);
 const id = nanoid();
 
 const stackName = isProd ? "NotlifyAppProduction" : `NotlifyAppPreview${id}`;
+const zoneId = "Z03627292WZKGOOSA618D";
 
 new ApplicationStack(app, stackName, {
   buildId: id,
   domainName,
+  zoneId,
   apiEntries: apiEntries.split(","),
   uiEntry,
 });

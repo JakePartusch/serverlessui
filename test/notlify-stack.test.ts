@@ -9,6 +9,7 @@ test("Stack with base params", () => {
     domainName: "test.com",
     apiEntries: [],
     uiEntry: "./test/build",
+    zoneId: "Z03627292WZKGOOSA618D",
   });
   expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();
 });
@@ -20,6 +21,7 @@ test("Stack with apiEntry param", () => {
     domainName: "test.com",
     apiEntries: ["./test/lambdas/test.ts"],
     uiEntry: "./test/build",
+    zoneId: "Z03627292WZKGOOSA618D",
   });
   expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();
 });
@@ -31,6 +33,7 @@ test("Stack with apiEntry javascript param", () => {
     domainName: "test.com",
     apiEntries: ["./test/lambdas/test.ts", "./test/lambdas/test2.js"],
     uiEntry: "./test/build",
+    zoneId: "Z03627292WZKGOOSA618D",
   });
   expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();
 });
