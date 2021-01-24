@@ -152,7 +152,7 @@ export class ApplicationStack extends Stack {
     }
     if (!props.domainName) {
       new CfnOutput(this, "Base Url", {
-        value: cloudFrontWebDistribution.distributionDomainName,
+        value: `https://${cloudFrontWebDistribution.distributionDomainName}`,
       });
     } else {
       new CfnOutput(this, "Base Url", {
@@ -171,7 +171,7 @@ export class ApplicationStack extends Stack {
         });
       } else {
         new CfnOutput(this, `Function Path - ${apiEntry.name}`, {
-          value: `${cloudFrontWebDistribution.distributionDomainName}/api/${apiEntry.name}`,
+          value: `https://${cloudFrontWebDistribution.distributionDomainName}/api/${apiEntry.name}`,
         });
       }
     });

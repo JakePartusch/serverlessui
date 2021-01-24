@@ -3207,9 +3207,17 @@ Object {
   "Outputs": Object {
     "BaseUrl": Object {
       "Value": Object {
-        "Fn::GetAtt": Array [
-          "CloudfrontWebDistributionCFDistributionDA9BC0CB",
-          "DomainName",
+        "Fn::Join": Array [
+          "",
+          Array [
+            "https://",
+            Object {
+              "Fn::GetAtt": Array [
+                "CloudfrontWebDistributionCFDistributionDA9BC0CB",
+                "DomainName",
+              ],
+            },
+          ],
         ],
       },
     },
