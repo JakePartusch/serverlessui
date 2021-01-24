@@ -3206,7 +3206,12 @@ exports[`Stack with no domain 1`] = `
 Object {
   "Outputs": Object {
     "BaseUrl": Object {
-      "Value": "https://undefined",
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "CloudfrontWebDistributionCFDistributionDA9BC0CB",
+          "DomainName",
+        ],
+      },
     },
   },
   "Parameters": Object {

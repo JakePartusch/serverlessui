@@ -1,6 +1,6 @@
 {
   "name": "@jakepartusch/notlify",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "bin": "./dist/bin/cli.js",
   "scripts": {
     "build": "tsc",

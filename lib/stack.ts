@@ -150,20 +150,30 @@ export class ApplicationStack extends Stack {
         ),
       });
     }
+    if (!props.domainName) {
+      new CfnOutput(this, "Base Url", {
+        value: cloudFrontWebDistribution.distributionDomainName,
+      });
+    } else {
+      new CfnOutput(this, "Base Url", {
+        value: props.buildId
+          ? `https://${props.buildId}.${props.domainName}`
+          : `https://${props.domainName}`,
+      });
+    }
 
-    new CfnOutput(this, "Base Url", {
-      value: props.buildId
-        ? `https://${props.buildId}.${props.domainName}`
-        : `https://${props.domainName}`,
-    });
-
-    functionFiles.map(
-      (apiEntry) =>
+    functionFiles.map((apiEntry) => {
+      if (props.domainName) {
         new CfnOutput(this, `Function Path - ${apiEntry.name}`, {
           value: props.buildId
             ? `https://${props.buildId}.${props.domainName}/api/${apiEntry.name}`
             : `https://${props.domainName}/api`,
-        })
-    );
+        });
+      } else {
+        new CfnOutput(this, `Function Path - ${apiEntry.name}`, {
+          value: `${cloudFrontWebDistribution.distributionDomainName}/api/${apiEntry.name}`,
+        });
+      }
+    });
   }
 }
