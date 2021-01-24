@@ -30,7 +30,7 @@ import * as path from "path";
 
 interface ApplicationStackProps extends StackProps {
   buildId?: string;
-  domainName: string;
+  domainName?: string;
   apiEntries: string[];
   uiEntry: string;
 }
@@ -39,15 +39,18 @@ export class ApplicationStack extends Stack {
   constructor(scope: App, id: string, props: ApplicationStackProps) {
     super(scope, id, props);
 
-    const hostedZone = HostedZone.fromHostedZoneAttributes(this, "HostedZone", {
-      hostedZoneId: "Z03627292WZKGOOSA618D",
-      zoneName: props.domainName,
-    });
+    let hostedZone, certificate;
+    if (props.domainName) {
+      hostedZone = HostedZone.fromHostedZoneAttributes(this, "HostedZone", {
+        hostedZoneId: "Z03627292WZKGOOSA618D",
+        zoneName: props.domainName,
+      });
 
-    const certificate = new Certificate(this, "Certificate", {
-      domainName: `*.${props.domainName}`,
-      validation: CertificateValidation.fromDns(hostedZone),
-    });
+      certificate = new Certificate(this, "Certificate", {
+        domainName: `*.${props.domainName}`,
+        validation: CertificateValidation.fromDns(hostedZone),
+      });
+    }
 
     const websiteBucket = new Bucket(this, "WebsiteBucket", {
       removalPolicy: RemovalPolicy.DESTROY,
@@ -63,27 +66,24 @@ export class ApplicationStack extends Stack {
       }
     );
 
+    const functionFiles = props.apiEntries.map((apiEntry) => ({
+      name: path.basename(apiEntry).split(".")[0],
+      entry: apiEntry,
+    }));
+
     websiteBucket.grantRead(originAccessIdentity.grantPrincipal);
 
-    const lambdas = props.apiEntries.map((apiEntry) => {
-      return new NodejsFunction(
-        this,
-        `NodejsFunction-${path.basename(apiEntry, ".ts")}`,
-        {
-          entry: apiEntry,
-          handler: "handler",
-        }
-      );
+    const lambdas = functionFiles.map((functionFile) => {
+      return new NodejsFunction(this, `NodejsFunction-${functionFile.name}`, {
+        entry: functionFile.entry,
+        handler: "handler",
+      });
     });
 
     const restApis = lambdas.map((lambda, i) => {
-      return new LambdaRestApi(
-        this,
-        `LambdaRestApi-${path.basename(props.apiEntries[i], ".ts")}`,
-        {
-          handler: lambda,
-        }
-      );
+      return new LambdaRestApi(this, `LambdaRestApi-${functionFiles[i].name}`, {
+        handler: lambda,
+      });
     });
 
     const originConfigs: SourceConfiguration[] = restApis.map((restApi, i) => ({
@@ -93,7 +93,7 @@ export class ApplicationStack extends Stack {
       },
       behaviors: [
         {
-          pathPattern: `/api/${path.basename(props.apiEntries[i], ".ts")}`,
+          pathPattern: `/api/${functionFiles[i].name}`,
           allowedMethods: CloudFrontAllowedMethods.ALL,
         },
       ],
@@ -113,14 +113,17 @@ export class ApplicationStack extends Stack {
           },
           ...originConfigs,
         ],
-        aliasConfiguration: {
-          acmCertRef: certificate.certificateArn,
-          names: [
-            props.buildId
-              ? `${props.buildId}.${props.domainName}`
-              : props.domainName,
-          ],
-        },
+        aliasConfiguration:
+          props.domainName && certificate
+            ? {
+                acmCertRef: certificate.certificateArn,
+                names: [
+                  props.buildId
+                    ? `${props.buildId}.${props.domainName}`
+                    : props.domainName,
+                ],
+              }
+            : undefined,
       }
     );
 
@@ -129,21 +132,23 @@ export class ApplicationStack extends Stack {
       destinationBucket: websiteBucket!,
     });
 
-    new ARecord(this, "IPv4 AliasRecord", {
-      zone: hostedZone,
-      recordName: props.buildId ?? "@",
-      target: RecordTarget.fromAlias(
-        new CloudFrontTarget(cloudFrontWebDistribution)
-      ),
-    });
+    if (hostedZone) {
+      new ARecord(this, "IPv4 AliasRecord", {
+        zone: hostedZone,
+        recordName: props.buildId ?? "@",
+        target: RecordTarget.fromAlias(
+          new CloudFrontTarget(cloudFrontWebDistribution)
+        ),
+      });
 
-    new AaaaRecord(this, "IPv6 AliasRecord", {
-      zone: hostedZone,
-      recordName: props.buildId ?? "@",
-      target: RecordTarget.fromAlias(
-        new CloudFrontTarget(cloudFrontWebDistribution)
-      ),
-    });
+      new AaaaRecord(this, "IPv6 AliasRecord", {
+        zone: hostedZone,
+        recordName: props.buildId ?? "@",
+        target: RecordTarget.fromAlias(
+          new CloudFrontTarget(cloudFrontWebDistribution)
+        ),
+      });
+    }
 
     new CfnOutput(this, "Base Url", {
       value: props.buildId
@@ -151,19 +156,13 @@ export class ApplicationStack extends Stack {
         : `https://${props.domainName}`,
     });
 
-    props.apiEntries.map(
+    functionFiles.map(
       (apiEntry) =>
-        new CfnOutput(
-          this,
-          `Function Path - ${path.basename(apiEntry, ".ts")}`,
-          {
-            value: props.buildId
-              ? `https://${props.buildId}.${
-                  props.domainName
-                }/api/${path.basename(apiEntry, ".ts")}`
-              : `https://${props.domainName}/api`,
-          }
-        )
+        new CfnOutput(this, `Function Path - ${apiEntry.name}`, {
+          value: props.buildId
+            ? `https://${props.buildId}.${props.domainName}/api/${apiEntry.name}`
+            : `https://${props.domainName}/api`,
+        })
     );
   }
 }
