@@ -11,6 +11,7 @@ const main = async () => {
     "--domain": String,
     "--functions": String,
     "--dir": String,
+    "--prod": Boolean,
   });
 
   const domain = args["--domain"];
@@ -22,16 +23,17 @@ const main = async () => {
   const apiFiles = files.join(",");
   const applicationFile = `${__dirname}/application.js`;
   const domainCli = domain ? `-c domainName=${domain}` : "";
+  const prodCli = args["--prod"] ? "-c prod=true" : "";
 
   child_process.execSync(
-    `cdk synth ${domainCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${applicationFile}" --quiet`,
+    `cdk synth ${prodCli} ${domainCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${applicationFile}" --quiet`,
     {
       stdio: "inherit",
     }
   );
 
   child_process.execSync(
-    `cdk deploy ${domainCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${applicationFile}" --require-approval never`,
+    `cdk deploy ${prodCli} ${domainCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${applicationFile}" --require-approval never`,
     {
       stdio: "inherit",
     }

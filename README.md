@@ -6,3 +6,4 @@
 - Cache invalidation when deploying to existing stack
 - --help doesn't do anything?
 - Lerna package cli and construct separately
+- Empty buck on delete
