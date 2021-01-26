@@ -17,7 +17,7 @@ const stackName = isProd ? "NotlifyAppProduction" : `NotlifyAppPreview${id}`;
 const zoneId = "Z03627292WZKGOOSA618D";
 
 new ApplicationStack(app, stackName, {
-  buildId: id,
+  buildId: isProd ? undefined : id,
   domainName,
   zoneId,
   apiEntries: apiEntries.split(","),
