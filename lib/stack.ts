@@ -14,8 +14,8 @@ import {
   CloudFrontWebDistribution,
   CloudFrontAllowedMethods,
   SourceConfiguration,
+  OriginProtocolPolicy,
 } from "@aws-cdk/aws-cloudfront";
-import { OriginAccessIdentity } from "@aws-cdk/aws-cloudfront";
 import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
 import { BucketDeployment, Source } from "@aws-cdk/aws-s3-deployment";
 import {
@@ -55,24 +55,16 @@ export class ApplicationStack extends Stack {
 
     const websiteBucket = new Bucket(this, "WebsiteBucket", {
       removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+      publicReadAccess: true,
       websiteIndexDocument: "index.html",
       websiteErrorDocument: "error.html",
     });
-
-    const originAccessIdentity = new OriginAccessIdentity(
-      this,
-      "OriginAccessIdentity",
-      {
-        comment: `CloudFront OriginAccessIdentity for ${websiteBucket.bucketName}`,
-      }
-    );
 
     const functionFiles = props.apiEntries.map((apiEntry) => ({
       name: path.basename(apiEntry).split(".")[0],
       entry: apiEntry,
     }));
-
-    websiteBucket.grantRead(originAccessIdentity.grantPrincipal);
 
     const lambdas = functionFiles.map((functionFile) => {
       return new NodejsFunction(this, `NodejsFunction-${functionFile.name}`, {
@@ -106,9 +98,9 @@ export class ApplicationStack extends Stack {
       {
         originConfigs: [
           {
-            s3OriginSource: {
-              originAccessIdentity,
-              s3BucketSource: websiteBucket,
+            customOriginSource: {
+              domainName: websiteBucket.bucketWebsiteDomainName,
+              originProtocolPolicy: OriginProtocolPolicy.HTTP_ONLY,
             },
             behaviors: [{ isDefaultBehavior: true }],
           },
@@ -131,6 +123,8 @@ export class ApplicationStack extends Stack {
     new BucketDeployment(this, "BucketDeployment", {
       sources: [Source.asset(props.uiEntry)],
       destinationBucket: websiteBucket!,
+      distribution: cloudFrontWebDistribution,
+      retainOnDelete: false,
     });
 
     if (hostedZone) {
