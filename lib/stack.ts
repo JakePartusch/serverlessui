@@ -113,7 +113,7 @@ export class ApplicationStack extends Stack {
                 names: [
                   props.buildId
                     ? `${props.buildId}.${props.domainName}`
-                    : props.domainName,
+                    : `www.${props.domainName}`,
                 ],
               }
             : undefined,
@@ -130,7 +130,7 @@ export class ApplicationStack extends Stack {
     if (hostedZone) {
       new ARecord(this, "IPv4 AliasRecord", {
         zone: hostedZone,
-        recordName: props.buildId ?? "@",
+        recordName: props.buildId ?? "www",
         target: RecordTarget.fromAlias(
           new CloudFrontTarget(cloudFrontWebDistribution)
         ),
@@ -138,7 +138,7 @@ export class ApplicationStack extends Stack {
 
       new AaaaRecord(this, "IPv6 AliasRecord", {
         zone: hostedZone,
-        recordName: props.buildId ?? "@",
+        recordName: props.buildId ?? "www",
         target: RecordTarget.fromAlias(
           new CloudFrontTarget(cloudFrontWebDistribution)
         ),
@@ -152,7 +152,7 @@ export class ApplicationStack extends Stack {
       new CfnOutput(this, "Base Url", {
         value: props.buildId
           ? `https://${props.buildId}.${props.domainName}`
-          : `https://${props.domainName}`,
+          : `https://www.${props.domainName}`,
       });
     }
 
@@ -161,7 +161,7 @@ export class ApplicationStack extends Stack {
         new CfnOutput(this, `Function Path - ${apiEntry.name}`, {
           value: props.buildId
             ? `https://${props.buildId}.${props.domainName}/api/${apiEntry.name}`
-            : `https://${props.domainName}/api`,
+            : `https://www.${props.domainName}/api`,
         });
       } else {
         new CfnOutput(this, `Function Path - ${apiEntry.name}`, {
