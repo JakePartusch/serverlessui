@@ -1,6 +1,6 @@
 {
   "name": "@jakepartusch/notlify-cli",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "cli CLI",
   "types": "dist/types/types.d.ts",
   "bin": {
@@ -17,7 +17,7 @@
   "files": [
     "tsconfig.json",
     "tslint.json",
-    "build",
+    "dist",
     "LICENSE",
     "readme.md",
     "docs",
