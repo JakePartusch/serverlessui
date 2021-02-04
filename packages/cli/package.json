@@ -1,6 +1,6 @@
 {
   "name": "@jakepartusch/notlify-cli",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "cli CLI",
   "types": "dist/types/types.d.ts",
   "bin": {
@@ -9,10 +9,9 @@
   "scripts": {
     "format": "prettier --write **/*.{js,ts,tsx,json}",
     "lint": "tslint -p .",
-    "clean-build": "rm -rf ./dist",
     "compile": "tsc -p .",
     "build": "rm -rf ./dist && yarn compile",
-    "prepublishOnly": "yarn build",
+    "prepublishOnly": "yarn compile",
     "test": "jest"
   },
   "files": [
