@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as cdk from "@aws-cdk/core";
 import { customAlphabet } from "nanoid";
-import { ApplicationStack } from "../lib/stack";
+import { ApplicationStack } from "construct";
 
 const app = new cdk.App();
 
@@ -20,8 +20,10 @@ new ApplicationStack(app, stackName, {
   buildId: isProd ? undefined : id,
   domainName,
   zoneId,
-  apiEntries: apiEntries.split(","),
+  apiEntries: apiEntries.split(",").filter((entry: string) => entry),
   uiEntry,
 });
 
-export default app;
+app.synth();
+
+// export default app;

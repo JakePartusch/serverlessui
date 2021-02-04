@@ -1,0 +1,57 @@
+{
+  "name": "@jakepartusch/notlify-cli",
+  "version": "0.0.1",
+  "description": "cli CLI",
+  "types": "build/types/types.d.ts",
+  "bin": {
+    "notlify": "bin/cli"
+  },
+  "scripts": {
+    "format": "prettier --write **/*.{js,ts,tsx,json}",
+    "lint": "tslint -p .",
+    "clean-build": "rm -rf ./build",
+    "compile": "tsc -p .",
+    "copy-templates": "if [ -e ./src/templates ]; then cp -a ./src/templates ./build/; fi",
+    "build": "yarn format && yarn lint && yarn clean-build && yarn compile && yarn copy-templates",
+    "prepublishOnly": "yarn build",
+    "test": "jest",
+    "watch": "jest --watch",
+    "snapupdate": "jest --updateSnapshot",
+    "coverage": "jest --coverage"
+  },
+  "files": [
+    "tsconfig.json",
+    "tslint.json",
+    "build",
+    "LICENSE",
+    "readme.md",
+    "docs",
+    "bin"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@jakepartusch/notlify-application": "0.0.1",
+    "gluegun": "latest",
+    "glob": "^7.1.6"
+  },
+  "devDependencies": {
+    "@types/node": "^12.7.11",
+    "@types/jest": "^24.0.18",
+    "ts-node": "^8.4.1",
+    "ts-jest": "^24.1.0",
+    "tslint": "^5.12.0",
+    "tslint-config-prettier": "^1.17.0",
+    "tslint-config-standard": "^8.0.1",
+    "typescript": "^3.6.3",
+    "prettier": "^1.12.1",
+    "jest": "^24.1.0"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  }
+}
