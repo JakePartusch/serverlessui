@@ -1,6 +1,6 @@
 {
   "name": "@jakepartusch/notlify-cli",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "cli CLI",
   "types": "dist/types/types.d.ts",
   "bin": {
@@ -11,7 +11,7 @@
     "lint": "tslint -p .",
     "clean-build": "rm -rf ./dist",
     "compile": "tsc -p .",
-    "build": "yarn format && yarn lint && yarn clean-build && yarn compile",
+    "build": "rm -rf ./dist && yarn compile",
     "prepublishOnly": "yarn build",
     "test": "jest"
   },
