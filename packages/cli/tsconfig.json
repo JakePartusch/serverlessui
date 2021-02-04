@@ -3,12 +3,13 @@
     /* Basic Options */
     "declaration": true,
     "declarationMap": true,
-    "declarationDir": "build/types",
+    "declarationDir": "dist/types",
     "sourceMap": true,
     "composite": true,
     "outDir": "dist",
     "rootDir": "src"
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "references": [{ "path": "../application" }]
 }

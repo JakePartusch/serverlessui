@@ -1,19 +1,8 @@
 {
+  "extends": "@tsconfig/node14/tsconfig.json",
   "compilerOptions": {
-    /* Basic Options */
-    "target": "ES2018",
-    "module": "commonjs",
-    "lib": ["es2018"],
-
-    /* Strict Type-Checking Options */
-    "strict": true
-
-    /* Module Resolution Options */
-    // "moduleResolution": "node",
-    // "esModuleInterop": true,
-
-    /* Advanced Options */
-    // "forceConsistentCasingInFileNames": true,
-    // "skipLibCheck": true
+    "outDir": "dist",
+    "declaration": true,
+    "composite": true
   }
 }

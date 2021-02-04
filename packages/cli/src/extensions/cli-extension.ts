@@ -1,5 +1,5 @@
 import { GluegunToolbox } from 'gluegun'
-const path = require.resolve('application')
+const path = require.resolve('@jakepartusch/notlify-application')
 
 // add your CLI-specific functionality here, which will then be accessible
 // to your commands

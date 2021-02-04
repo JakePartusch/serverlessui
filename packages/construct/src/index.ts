@@ -1,12 +1,9 @@
-import {
-  Certificate,
-  CertificateValidation,
-} from "@aws-cdk/aws-certificatemanager";
+import { ICertificate } from "@aws-cdk/aws-certificatemanager";
 import {
   ARecord,
   AaaaRecord,
-  HostedZone,
   RecordTarget,
+  IHostedZone,
 } from "@aws-cdk/aws-route53";
 import { CloudFrontTarget } from "@aws-cdk/aws-route53-targets";
 import { LambdaRestApi } from "@aws-cdk/aws-apigateway";
@@ -21,37 +18,29 @@ import { BucketDeployment, Source } from "@aws-cdk/aws-s3-deployment";
 import {
   App,
   CfnOutput,
+  Construct,
   RemovalPolicy,
-  Stack,
   StackProps,
 } from "@aws-cdk/core";
 import { Bucket } from "@aws-cdk/aws-s3";
 import * as path from "path";
 
-interface ApplicationStackProps extends StackProps {
+interface Domain {
+  domainName: string;
+  hostedZone: IHostedZone;
+  certificate: ICertificate;
+}
+
+interface ServerlessUIProps extends StackProps {
   buildId?: string;
-  domainName?: string;
-  zoneId?: string;
+  domain?: Domain;
   apiEntries: string[];
   uiEntry: string;
 }
 
-export class ApplicationStack extends Stack {
-  constructor(scope: App, id: string, props: ApplicationStackProps) {
-    super(scope, id, props);
-
-    let hostedZone, certificate;
-    if (props.domainName && props.zoneId) {
-      hostedZone = HostedZone.fromHostedZoneAttributes(this, "HostedZone", {
-        hostedZoneId: props.zoneId,
-        zoneName: props.domainName,
-      });
-
-      certificate = new Certificate(this, "Certificate", {
-        domainName: `*.${props.domainName}`,
-        validation: CertificateValidation.fromDns(hostedZone),
-      });
-    }
+export class ServerlessUI extends Construct {
+  constructor(scope: Construct, id: string, props: ServerlessUIProps) {
+    super(scope, id);
 
     const websiteBucket = new Bucket(this, "WebsiteBucket", {
       removalPolicy: RemovalPolicy.DESTROY,
@@ -106,17 +95,16 @@ export class ApplicationStack extends Stack {
           },
           ...originConfigs,
         ],
-        aliasConfiguration:
-          props.domainName && certificate
-            ? {
-                acmCertRef: certificate.certificateArn,
-                names: [
-                  props.buildId
-                    ? `${props.buildId}.${props.domainName}`
-                    : `www.${props.domainName}`,
-                ],
-              }
-            : undefined,
+        aliasConfiguration: props.domain
+          ? {
+              acmCertRef: props.domain.certificate.certificateArn,
+              names: [
+                props.buildId
+                  ? `${props.buildId}.${props.domain.domainName}`
+                  : `www.${props.domain.domainName}`,
+              ],
+            }
+          : undefined,
       }
     );
 
@@ -127,9 +115,9 @@ export class ApplicationStack extends Stack {
       retainOnDelete: false,
     });
 
-    if (hostedZone) {
+    if (props.domain) {
       new ARecord(this, "IPv4 AliasRecord", {
-        zone: hostedZone,
+        zone: props.domain.hostedZone,
         recordName: props.buildId ?? "www",
         target: RecordTarget.fromAlias(
           new CloudFrontTarget(cloudFrontWebDistribution)
@@ -137,31 +125,31 @@ export class ApplicationStack extends Stack {
       });
 
       new AaaaRecord(this, "IPv6 AliasRecord", {
-        zone: hostedZone,
+        zone: props.domain.hostedZone,
         recordName: props.buildId ?? "www",
         target: RecordTarget.fromAlias(
           new CloudFrontTarget(cloudFrontWebDistribution)
         ),
       });
     }
-    if (!props.domainName) {
+    if (!props.domain) {
       new CfnOutput(this, "Base Url", {
         value: `https://${cloudFrontWebDistribution.distributionDomainName}`,
       });
     } else {
       new CfnOutput(this, "Base Url", {
         value: props.buildId
-          ? `https://${props.buildId}.${props.domainName}`
-          : `https://www.${props.domainName}`,
+          ? `https://${props.buildId}.${props.domain.domainName}`
+          : `https://www.${props.domain.domainName}`,
       });
     }
 
     functionFiles.map((apiEntry) => {
-      if (props.domainName) {
+      if (props.domain) {
         new CfnOutput(this, `Function Path - ${apiEntry.name}`, {
           value: props.buildId
-            ? `https://${props.buildId}.${props.domainName}/api/${apiEntry.name}`
-            : `https://www.${props.domainName}/api`,
+            ? `https://${props.buildId}.${props.domain.domainName}/api/${apiEntry.name}`
+            : `https://www.${props.domain.domainName}/api`,
         });
       } else {
         new CfnOutput(this, `Function Path - ${apiEntry.name}`, {

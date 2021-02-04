@@ -1,15 +1,10 @@
 {
+  "extends": "@tsconfig/node14/tsconfig.json",
   "compilerOptions": {
-    "target": "ES2018",
-    "module": "commonjs",
-    "lib": ["es2018"],
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "composite": true,
+    "rootDir": "src",
     "outDir": "dist",
-    "rootDir": "src"
+    "declaration": true,
+    "composite": true
   },
-  "include": ["src"],
   "references": [{ "path": "../construct" }]
 }
