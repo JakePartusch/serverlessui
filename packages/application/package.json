@@ -1,6 +1,6 @@
 {
   "name": "@jakepartusch/notlify-application",
-  "version": "0.0.6",
+  "version": "0.1.0-alpha.0",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@aws-cdk/core": "1.85.0",
-    "@jakepartusch/notlify-construct": "0.0.6",
+    "@jakepartusch/notlify-construct": "^0.1.0-alpha.0",
     "nanoid": "^3.1.20"
   },
   "devDependencies": {
