@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    /* Basic Options */
+    "declaration": true,
+    "declarationMap": true,
+    "declarationDir": "dist/types",
+    "sourceMap": true,
+    "composite": true,
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"],
+  "references": [{ "path": "../application" }]
+}
