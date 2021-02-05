@@ -648,19 +648,19 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@jakepartusch/notlify-application@0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@jakepartusch/notlify-application/-/notlify-application-0.0.5.tgz#766398507eea18363244a96290d5a4bb419eee08"
-  integrity sha512-hiq0w1rpzqJAIc2My8UVGiVV/QE6XYgwA4DseVWmBOOHhH0X3/3bCZXByKb8p0WDquB8VaazBXuv1zHuwM9S8w==
+"@jakepartusch/notlify-application@0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@jakepartusch/notlify-application/-/notlify-application-0.0.6.tgz#8e8f6b4ced0be11903d563aee8b8365ecbb400fc"
+  integrity sha512-jR4qT2cIjgxLwzOEPDvQwG73M7r8A17YQh7GfJ37uHOjH1NFB6DPjy8KCqC97oxGbvci9wtv+Bf7ikGvyUEEgw==
   dependencies:
     "@aws-cdk/core" "1.85.0"
-    "@jakepartusch/notlify-construct" "0.0.5"
+    "@jakepartusch/notlify-construct" "0.0.6"
     nanoid "^3.1.20"
 
-"@jakepartusch/notlify-construct@0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@jakepartusch/notlify-construct/-/notlify-construct-0.0.5.tgz#bd70bbed2a56e43b5d280127b98aa60c4e5d2626"
-  integrity sha512-SstbjhVS+exzN6Izw1rsw0u1H3uTDYdWHw4H+p6COxjhR5PCmCW0T/XBmSsaFzdXSsDdF9Cf4Zjv6W6xiFzbGA==
+"@jakepartusch/notlify-construct@0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@jakepartusch/notlify-construct/-/notlify-construct-0.0.6.tgz#71b38f2ca0c4ae9b5afb57ddf1f39a2d244fe7db"
+  integrity sha512-OpADikKq1UkVtPeBsgUG9X74RocFwAUH1rGKaGoPkWewGN77d14g05Cuu1HeZRMxJxQcf8ghSmS4bQErUJUKmw==
   dependencies:
     "@aws-cdk/aws-apigateway" "1.85.0"
     "@aws-cdk/aws-certificatemanager" "1.85.0"
