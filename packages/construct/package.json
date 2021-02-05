@@ -1,6 +1,6 @@
 {
   "name": "@jakepartusch/notlify-construct",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,7 +22,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@tsconfig/node14": "^1.0.0",
+    "@tsconfig/node10": "^1.0.7",
     "typescript": "^4.1.3"
   }
 }
