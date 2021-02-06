@@ -1,6 +1,6 @@
 {
   "name": "@jakepartusch/notlify-construct",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0-alpha.1",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

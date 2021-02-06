@@ -1,6 +1,6 @@
 {
   "name": "@jakepartusch/notlify-cli",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0-alpha.1",
   "description": "cli CLI",
   "types": "dist/types/types.d.ts",
   "bin": {
@@ -25,8 +25,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@jakepartusch/notlify-serverless-application": "^0.1.0-alpha.0",
-    "@jakepartusch/notlify-domain-application": "^0.1.0-alpha.0",
+    "@jakepartusch/notlify-domain-application": "^0.1.0-alpha.1",
+    "@jakepartusch/notlify-serverless-application": "^0.1.0-alpha.1",
     "glob": "^7.1.6",
     "gluegun": "latest"
   },
