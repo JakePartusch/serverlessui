@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import * as cdk from "@aws-cdk/core";
 import { customAlphabet } from "nanoid";
 import { ServerlessUIStack } from "./stacks/serverless-ui.stack";

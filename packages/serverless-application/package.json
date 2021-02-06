@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc -p .",
+    "build": "rollup -c",
     "prepack": "rm -rf ./dist && yarn build"
   },
   "dependencies": {
@@ -14,7 +14,9 @@
     "nanoid": "^3.1.20"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^8.1.1",
     "@tsconfig/node10": "^1.0.7",
+    "rollup": "^2.38.5",
     "typescript": "^4.1.3"
   },
   "author": "",

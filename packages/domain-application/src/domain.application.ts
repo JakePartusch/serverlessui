@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import * as cdk from "@aws-cdk/core";
 import { DomainStack } from "./stacks/domain.stack";
 

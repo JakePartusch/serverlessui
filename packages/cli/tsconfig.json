@@ -10,6 +10,5 @@
     "rootDir": "src"
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules"],
-  "references": [{ "path": "../application" }]
+  "exclude": ["node_modules"]
 }

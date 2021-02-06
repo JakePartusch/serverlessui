@@ -9,8 +9,8 @@
   "scripts": {
     "format": "prettier --write **/*.{js,ts,tsx,json}",
     "lint": "tslint -p .",
-    "compile": "tsc -p .",
-    "prepack": "rm -rf ./dist && yarn compile",
+    "build": "tsc -p .",
+    "prepack": "rm -rf ./dist && yarn build",
     "test": "jest"
   },
   "files": [
