@@ -4,8 +4,10 @@ import * as child_process from 'child_process'
 
 const command: GluegunCommand = {
   name: 'deploy',
+  alias: 'd',
+  description: 'Deploy your website and serverless functions',
   run: async (toolbox) => {
-    const { print, parameters, getApplicationFileReference } = toolbox
+    const { parameters, getApplicationFileReference } = toolbox
 
     const { options } = parameters
 
@@ -35,8 +37,6 @@ const command: GluegunCommand = {
         stdio: 'inherit',
       }
     )
-
-    print.info(domain)
   },
 }
 

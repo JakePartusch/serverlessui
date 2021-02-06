@@ -3,7 +3,7 @@ import { HostedZone } from "@aws-cdk/aws-route53";
 import { App, Stack, StackProps } from "@aws-cdk/core";
 import { ServerlessUI } from "@jakepartusch/notlify-construct";
 
-interface ApplicationStackProps extends StackProps {
+interface ServerlessUIStackProps extends StackProps {
   buildId?: string;
   domainName?: string;
   zoneId?: string;
@@ -12,8 +12,8 @@ interface ApplicationStackProps extends StackProps {
   uiEntry: string;
 }
 
-export class ApplicationStack extends Stack {
-  constructor(scope: App, id: string, props: ApplicationStackProps) {
+export class ServerlessUIStack extends Stack {
+  constructor(scope: App, id: string, props: ServerlessUIStackProps) {
     super(scope, id, props);
 
     const domain =

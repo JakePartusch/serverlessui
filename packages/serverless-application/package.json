@@ -1,5 +1,5 @@
 {
-  "name": "@jakepartusch/notlify-application",
+  "name": "@jakepartusch/notlify-serverless-application",
   "version": "0.1.0-alpha.0",
   "description": "",
   "main": "dist/index.js",

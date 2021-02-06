@@ -25,7 +25,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@jakepartusch/notlify-application": "^0.1.0-alpha.0",
+    "@jakepartusch/notlify-serverless-application": "^0.1.0-alpha.0",
+    "@jakepartusch/notlify-domain-application": "^0.1.0-alpha.0",
     "glob": "^7.1.6",
     "gluegun": "latest"
   },
