@@ -10,8 +10,7 @@
     "format": "prettier --write **/*.{js,ts,tsx,json}",
     "lint": "tslint -p .",
     "compile": "tsc -p .",
-    "build": "rm -rf ./dist && yarn compile",
-    "prepublishOnly": "yarn compile",
+    "prepack": "rm -rf ./dist && yarn compile",
     "test": "jest"
   },
   "files": [
