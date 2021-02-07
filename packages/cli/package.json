@@ -1,8 +1,8 @@
 {
   "name": "@jakepartusch/notlify-cli",
   "version": "0.1.0-alpha.2",
-  "description": "cli CLI",
-  "types": "dist/types/types.d.ts",
+  "description": "Notlify CLI",
+  "types": "dist/types/src/cli.d.ts",
   "bin": {
     "notlify": "bin/cli"
   },
