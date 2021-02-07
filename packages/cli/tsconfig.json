@@ -1,14 +1,9 @@
 {
+  "extends": "@tsconfig/node10/tsconfig.json",
   "compilerOptions": {
-    /* Basic Options */
-    "declaration": true,
-    "declarationMap": true,
-    "declarationDir": "dist/types",
-    "sourceMap": true,
-    "composite": true,
     "outDir": "dist",
-    "rootDir": "src"
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+    "declarationDir": "dist/types",
+    "declaration": true,
+    "composite": true
+  }
 }

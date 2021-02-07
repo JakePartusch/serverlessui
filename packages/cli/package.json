@@ -9,8 +9,9 @@
   "scripts": {
     "format": "prettier --write **/*.{js,ts,tsx,json}",
     "lint": "tslint -p .",
-    "build": "tsc -p .",
-    "prepack": "rm -rf ./dist && yarn build",
+    "build": "rollup -c",
+    "rimraf": "rm -rf ./dist",
+    "prepack": "yarn rimraf && yarn build",
     "test": "jest"
   },
   "files": [
@@ -30,16 +31,18 @@
     "gluegun": "latest"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^8.1.1",
     "@types/jest": "^24.0.18",
     "@types/node": "^12.7.11",
     "jest": "^24.1.0",
     "prettier": "^1.12.1",
+    "rollup": "^2.38.5",
     "ts-jest": "^24.1.0",
     "ts-node": "^8.4.1",
     "tslint": "^5.12.0",
     "tslint-config-prettier": "^1.17.0",
     "tslint-config-standard": "^8.0.1",
-    "typescript": "^3.6.3"
+    "typescript": "^4.1.3"
   },
   "jest": {
     "preset": "ts-jest",
