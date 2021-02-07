@@ -1,7 +1,7 @@
 import { GluegunCommand } from 'gluegun'
 import * as child_process from 'child_process'
 const domainApplicationPath = require.resolve(
-  '@jakepartusch/notlify-serverless-application'
+  '@jakepartusch/notlify-domain-application'
 )
 
 export const command: GluegunCommand = {
