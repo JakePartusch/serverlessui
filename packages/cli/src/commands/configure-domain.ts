@@ -1,27 +1,26 @@
 import { GluegunCommand } from 'gluegun'
 import * as child_process from 'child_process'
+const domainApplicationPath = require.resolve(
+  '@jakepartusch/notlify-serverless-application'
+)
 
 export const command: GluegunCommand = {
   name: 'configure-domain',
   description: 'Create a Route53 Zone and Wildcard Certificate',
   run: async toolbox => {
-    const { parameters, getDomainApplicationFileReference } = toolbox
-
+    const { parameters } = toolbox
     const { options } = parameters
-
     const { domain } = options
 
-    const applicationFile = getDomainApplicationFileReference()
-
     child_process.execSync(
-      `cdk synth -c domainName=${domain} -a "node ${applicationFile}" --quiet`,
+      `cdk synth -c domainName=${domain} -a "node ${domainApplicationPath}" --quiet`,
       {
         stdio: 'inherit'
       }
     )
 
     child_process.execSync(
-      `cdk deploy -c domainName=${domain} -a "node ${applicationFile}" --require-approval never`,
+      `cdk deploy -c domainName=${domain} -a "node ${domainApplicationPath}" --require-approval never`,
       {
         stdio: 'inherit'
       }
