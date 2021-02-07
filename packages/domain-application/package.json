@@ -1,6 +1,6 @@
 {
   "name": "@jakepartusch/notlify-domain-application",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/types/src/index.d.ts",
@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@aws-cdk/core": "1.85.0",
-    "@jakepartusch/notlify-construct": "^0.1.0-alpha.1"
+    "@jakepartusch/notlify-construct": "^0.1.0-alpha.2"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.1.1",
