@@ -2,7 +2,7 @@ import { GluegunCommand } from 'gluegun'
 import * as glob from 'glob'
 import * as child_process from 'child_process'
 
-const command: GluegunCommand = {
+export const command: GluegunCommand = {
   name: 'deploy',
   alias: 'd',
   description: 'Deploy your website and serverless functions',
@@ -39,5 +39,3 @@ const command: GluegunCommand = {
     )
   },
 }
-
-module.exports = command

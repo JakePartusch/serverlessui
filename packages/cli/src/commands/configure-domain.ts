@@ -1,7 +1,7 @@
 import { GluegunCommand } from 'gluegun'
 import * as child_process from 'child_process'
 
-const command: GluegunCommand = {
+export const command: GluegunCommand = {
   name: 'configure-domain',
   description: 'Create a Route53 Zone and Wildcard Certificate',
   run: async toolbox => {
@@ -28,5 +28,3 @@ const command: GluegunCommand = {
     )
   }
 }
-
-module.exports = command
