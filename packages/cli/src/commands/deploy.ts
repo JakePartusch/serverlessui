@@ -10,7 +10,7 @@ export const command: GluegunCommand = {
   name: 'deploy',
   alias: 'd',
   description: 'Deploy your website and serverless functions',
-  run: async (toolbox) => {
+  run: async toolbox => {
     const { parameters } = toolbox
 
     const { options } = parameters
@@ -19,7 +19,7 @@ export const command: GluegunCommand = {
       domain,
       functions = './functions',
       dir = './dist',
-      prod = false,
+      prod = false
     } = options
     const files = glob.sync(`${functions}/**/*.{js,ts}`)
 
@@ -27,27 +27,41 @@ export const command: GluegunCommand = {
     const configResult = explorerSync.search()
 
     const apiFiles = files.join(',')
-    const domainCli = domain ? `-c domainName=${domain}` : ''
     const prodCli = prod ? '-c prod=true' : ''
-    const zoneIdCli = configResult.isEmpty
+
+    if (apiFiles.length === 0) {
+      toolbox.print.info(`No functions found in directory ${functions}`)
+    }
+    if (prod) {
+      toolbox.print.info('Deploying Production Stack...')
+    } else {
+      toolbox.print.info('Deploying Preview Stack...')
+    }
+    if (!configResult?.isEmpty) {
+      toolbox.print.info('Config file found, overriding defaults')
+    }
+
+    const zoneIdCli = configResult?.isEmpty
       ? ''
-      : `-c zoneId=${configResult.config.zoneId}`
-    const certificateArnCli = configResult.isEmpty
+      : `-c zoneId=${configResult?.config?.zoneId}`
+    const certificateArnCli = configResult?.isEmpty
       ? ''
-      : `-c zoneId=${configResult.config.certificateArn}`
+      : `-c certificateArn=${configResult?.config?.certificateArn}`
+
+    const domainCli = configResult?.isEmpty ? '' : `-c domainName=${domain}`
 
     child_process.execSync(
-      `cdk synth ${prodCli} ${domainCli} ${zoneIdCli} ${certificateArnCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --quiet`,
+      `cdk synth ${prodCli} ${domainCli} ${zoneIdCli} ${certificateArnCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}"`,
       {
-        stdio: 'inherit',
+        stdio: 'inherit'
       }
     )
 
     child_process.execSync(
       `cdk deploy ${prodCli} ${domainCli} ${zoneIdCli} ${certificateArnCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --require-approval never`,
       {
-        stdio: 'inherit',
+        stdio: 'inherit'
       }
     )
-  },
+  }
 }
