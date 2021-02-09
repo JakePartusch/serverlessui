@@ -1,6 +1,6 @@
 {
   "name": "@serverlessui/cli",
-  "version": "0.1.0-alpha.6",
+  "version": "0.2.0-alpha.0",
   "description": "Serverless UI CLI",
   "types": "dist/types/src/cli.d.ts",
   "bin": {
@@ -28,8 +28,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@serverlessui/domain-app": "^0.1.0-alpha.2",
-    "@serverlessui/serverless-app": "^0.1.0-alpha.2",
+    "@serverlessui/domain-app": "^0.2.0-alpha.0",
+    "@serverlessui/serverless-app": "^0.2.0-alpha.0",
     "cosmiconfig": "^7.0.0",
     "glob": "^7.1.6",
     "gluegun": "latest"
