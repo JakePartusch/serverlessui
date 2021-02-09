@@ -1,7 +1,6 @@
-#!/usr/bin/env node
 import * as cdk from "@aws-cdk/core";
 import { customAlphabet } from "nanoid";
-import { ApplicationStack } from "./application-stack";
+import { ServerlessUIStack } from "./stacks/serverless-ui.stack";
 
 const app = new cdk.App();
 
@@ -16,9 +15,9 @@ const id = nanoid();
 const stackName = isProd ? "NotlifyAppProduction" : `NotlifyAppPreview${id}`;
 const zoneId = "Z03627292WZKGOOSA618D";
 const certificateArn =
-  "	arn:aws:acm:us-east-1:644660454389:certificate/31b94cec-360e-4b3c-bb57-7d00ad8322e2";
+  "arn:aws:acm:us-east-1:644660454389:certificate/31b94cec-360e-4b3c-bb57-7d00ad8322e2";
 
-new ApplicationStack(app, stackName, {
+new ServerlessUIStack(app, stackName, {
   buildId: isProd ? undefined : id,
   domainName,
   zoneId,
@@ -27,4 +26,4 @@ new ApplicationStack(app, stackName, {
   uiEntry,
 });
 
-export default app;
+export const ServerlessUIApplication = app;

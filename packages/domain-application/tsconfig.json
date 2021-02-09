@@ -1,7 +1,8 @@
 {
-  "extends": "@tsconfig/node14/tsconfig.json",
+  "extends": "@tsconfig/node10/tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
+    "declarationDir": "dist/types",
     "declaration": true,
     "composite": true
   }

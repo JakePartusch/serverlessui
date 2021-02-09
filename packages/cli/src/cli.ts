@@ -1,14 +1,18 @@
-const { build } = require('gluegun')
+import { build } from 'gluegun'
+import { command as DeployCommand } from './commands/deploy'
+import { command as ConfigureDomainCommand } from './commands/configure-domain'
 
 /**
  * Create the cli and kick it off
  */
-async function run(argv) {
+export async function run(argv) {
   // create a CLI runtime
   const cli = build()
     .brand('cli')
     .src(__dirname)
     .plugins('./node_modules', { matching: 'cli-*', hidden: true })
+    .command(DeployCommand)
+    .command(ConfigureDomainCommand)
     .help() // provides default for help, h, --help, -h
     .version() // provides default for version, v, --version, -v
     .create()
@@ -21,5 +25,3 @@ async function run(argv) {
   // send it back (for testing, mostly)
   return toolbox
 }
-
-module.exports = { run }

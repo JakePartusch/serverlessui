@@ -1,12 +1,13 @@
 {
   "name": "@jakepartusch/notlify-construct",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0-alpha.2",
   "description": "",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/types/src/index.d.ts",
   "scripts": {
-    "build": "tsc -p .",
-    "prepublishOnly": "rm -rf ./dist && yarn build"
+    "build": "rollup -c",
+    "rimraf": "rm -rf ./dist",
+    "prepack": "yarn rimraf && yarn build"
   },
   "dependencies": {
     "@aws-cdk/aws-apigateway": "1.85.0",
@@ -22,7 +23,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@rollup/plugin-typescript": "^8.1.1",
     "@tsconfig/node10": "^1.0.7",
+    "rollup": "^2.38.5",
     "typescript": "^4.1.3"
   }
 }

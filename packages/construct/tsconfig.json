@@ -2,7 +2,7 @@
   "extends": "@tsconfig/node10/tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src",
+    "declarationDir": "dist/types",
     "declaration": true,
     "composite": true
   }
