@@ -1,5 +1,5 @@
 import { App, Stack, StackProps } from "@aws-cdk/core";
-import { DomainCertificate } from "@jakepartusch/notlify-construct";
+import { DomainCertificate } from "@serverlessui/construct";
 
 interface DomainStackProps extends StackProps {
   domainName: string;

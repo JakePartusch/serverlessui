@@ -1,10 +1,13 @@
 {
-  "name": "@jakepartusch/notlify-cli",
+  "name": "@serverlessui/cli",
   "version": "0.1.0-alpha.6",
-  "description": "Notlify CLI",
+  "description": "Serverless UI CLI",
   "types": "dist/types/src/cli.d.ts",
   "bin": {
-    "notlify": "bin/cli"
+    "sui": "bin/cli"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "format": "prettier --write **/*.{js,ts,tsx,json}",
@@ -25,8 +28,9 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@jakepartusch/notlify-domain-application": "^0.1.0-alpha.2",
-    "@jakepartusch/notlify-serverless-application": "^0.1.0-alpha.2",
+    "@serverlessui/domain-app": "^0.1.0-alpha.2",
+    "@serverlessui/serverless-app": "^0.1.0-alpha.2",
+    "cosmiconfig": "^7.0.0",
     "glob": "^7.1.6",
     "gluegun": "latest"
   },

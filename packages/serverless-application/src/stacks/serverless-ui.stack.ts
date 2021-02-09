@@ -1,7 +1,7 @@
 import { Certificate } from "@aws-cdk/aws-certificatemanager";
 import { HostedZone } from "@aws-cdk/aws-route53";
 import { App, Stack, StackProps } from "@aws-cdk/core";
-import { ServerlessUI } from "@jakepartusch/notlify-construct";
+import { ServerlessUI } from "@serverlessui/construct";
 
 interface ServerlessUIStackProps extends StackProps {
   buildId?: string;

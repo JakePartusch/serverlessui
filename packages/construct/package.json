@@ -1,9 +1,12 @@
 {
-  "name": "@jakepartusch/notlify-construct",
+  "name": "@serverlessui/construct",
   "version": "0.1.0-alpha.2",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/types/src/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "rollup -c",
     "rimraf": "rm -rf ./dist",

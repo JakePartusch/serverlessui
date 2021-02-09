@@ -1,8 +1,9 @@
 import { GluegunCommand } from 'gluegun'
 import * as glob from 'glob'
 import * as child_process from 'child_process'
+import { cosmiconfigSync } from 'cosmiconfig'
 const serverlessApplicationPath = require.resolve(
-  '@jakepartusch/notlify-serverless-application'
+  '@serverlessui/serverless-app'
 )
 
 export const command: GluegunCommand = {
@@ -22,19 +23,28 @@ export const command: GluegunCommand = {
     } = options
     const files = glob.sync(`${functions}/**/*.{js,ts}`)
 
+    const explorerSync = cosmiconfigSync('serverlessui')
+    const configResult = explorerSync.search()
+
     const apiFiles = files.join(',')
     const domainCli = domain ? `-c domainName=${domain}` : ''
     const prodCli = prod ? '-c prod=true' : ''
+    const zoneIdCli = configResult.isEmpty
+      ? ''
+      : `-c zoneId=${configResult.config.zoneId}`
+    const certificateArnCli = configResult.isEmpty
+      ? ''
+      : `-c zoneId=${configResult.config.certificateArn}`
 
     child_process.execSync(
-      `cdk synth ${prodCli} ${domainCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --quiet`,
+      `cdk synth ${prodCli} ${domainCli} ${zoneIdCli} ${certificateArnCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --quiet`,
       {
         stdio: 'inherit',
       }
     )
 
     child_process.execSync(
-      `cdk deploy ${prodCli} ${domainCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --require-approval never`,
+      `cdk deploy ${prodCli} ${domainCli} ${zoneIdCli} ${certificateArnCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --require-approval never`,
       {
         stdio: 'inherit',
       }
