@@ -1,7 +1,7 @@
 {
   "name": "@serverlessui/domain-app",
   "version": "0.2.0-alpha.5",
-  "description": "",
+  "description": "CDK Application to deploy a stack with a Hosted Zone and Wildcard Certificate",
   "main": "dist/index.js",
   "types": "dist/types/src/index.d.ts",
   "publishConfig": {
@@ -22,7 +22,13 @@
     "rollup": "^2.38.5",
     "typescript": "^4.1.3"
   },
-  "author": "",
-  "license": "ISC",
+  "files": [
+    "tsconfig.json",
+    "dist",
+    "LICENSE",
+    "readme.md"
+  ],
+  "author": "Jake Partusch <jakepartusch@gmail.com>",
+  "license": "MIT",
   "gitHead": "4a136cf3777ae864939139dcaee277e9213fe925"
 }

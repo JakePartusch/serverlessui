@@ -1,7 +1,7 @@
 {
   "name": "@serverlessui/construct",
   "version": "0.2.0-alpha.5",
-  "description": "",
+  "description": "CDK constructs to support Serverless UI",
   "main": "dist/index.js",
   "types": "dist/types/src/index.d.ts",
   "publishConfig": {
@@ -23,8 +23,14 @@
     "@aws-cdk/aws-s3-deployment": "1.85.0",
     "@aws-cdk/core": "1.85.0"
   },
-  "author": "",
-  "license": "ISC",
+  "files": [
+    "tsconfig.json",
+    "dist",
+    "LICENSE",
+    "readme.md"
+  ],
+  "author": "Jake Partusch <jakepartusch@gmail.com>",
+  "license": "MIT",
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.1.1",
     "@tsconfig/node10": "^1.0.7",

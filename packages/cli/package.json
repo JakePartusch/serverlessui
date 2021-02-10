@@ -26,6 +26,7 @@
     "docs",
     "bin"
   ],
+  "author": "Jake Partusch <jakepartusch@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "@serverlessui/domain-app": "^0.2.0-alpha.5",
