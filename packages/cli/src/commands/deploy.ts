@@ -15,12 +15,8 @@ export const command: GluegunCommand = {
 
     const { options } = parameters
 
-    const {
-      domain,
-      functions = './functions',
-      dir = './dist',
-      prod = false
-    } = options
+    const { functions = './functions', dir = './dist', prod = false } = options
+
     const files = glob.sync(`${functions}/**/*.{js,ts}`)
 
     const explorerSync = cosmiconfigSync('serverlessui')
@@ -33,7 +29,7 @@ export const command: GluegunCommand = {
       toolbox.print.info(`No functions found in directory ${functions}`)
     }
     if (prod) {
-      toolbox.print.info('Deploying Production Stack...')
+      toolbox.print.highlight('Deploying Production Stack...')
     } else {
       toolbox.print.info('Deploying Preview Stack...')
     }
@@ -43,18 +39,20 @@ export const command: GluegunCommand = {
 
     const zoneIdCli = configResult?.isEmpty
       ? ''
-      : `-c zoneId=${configResult?.config?.zoneId}`
+      : `-c zoneId="${configResult?.config?.zoneId}"`
     const certificateArnCli = configResult?.isEmpty
       ? ''
-      : `-c certificateArn=${configResult?.config?.certificateArn}`
+      : `-c certificateArn="${configResult?.config?.certificateArn}"`
 
-    const domainCli = configResult?.isEmpty ? '' : `-c domainName=${domain}`
+    const domainCli = configResult?.isEmpty
+      ? ''
+      : `-c domainName="${configResult?.config?.domain}"`
 
     toolbox.print.highlight(
-      `cdk synth ${prodCli} ${domainCli} ${zoneIdCli} ${certificateArnCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --quiet`
+      `cdk synth ${prodCli} ${domainCli} ${zoneIdCli} ${certificateArnCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}" --quiet`
     )
     child_process.execSync(
-      `cdk synth ${prodCli} ${domainCli} ${zoneIdCli} ${certificateArnCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --quiet`,
+      `cdk synth ${prodCli} ${domainCli} ${zoneIdCli} ${certificateArnCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}" --quiet`,
       {
         stdio: 'inherit'
       }
