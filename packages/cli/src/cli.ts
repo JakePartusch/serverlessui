@@ -5,7 +5,7 @@ import { command as ConfigureDomainCommand } from './commands/configure-domain'
 /**
  * Create the cli and kick it off
  */
-export async function run(argv) {
+export async function run(argv?: string) {
   // create a CLI runtime
   const cli = build()
     .brand('cli')

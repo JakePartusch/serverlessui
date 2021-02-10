@@ -1,5 +1,5 @@
 {
-  "name": "@jakepartusch/notlify",
+  "name": "serverlessui",
   "version": "0.0.1",
   "private": "true",
   "workspaces": [

@@ -5,7 +5,7 @@ const app = new cdk.App();
 
 const domainName = app.node.tryGetContext("domainName");
 
-new DomainStack(app, "NotlifyDomain", {
+new DomainStack(app, "ServelessUIDomain", {
   domainName,
 });
 
