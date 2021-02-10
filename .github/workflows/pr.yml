@@ -12,7 +12,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: "14.x"
-      - run: npm ci
       - run: npm install -g @serverlessui/cli
       - run: npm install -g aws-cdk
       - name: Configure AWS Credentials
