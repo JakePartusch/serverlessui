@@ -1,6 +1,6 @@
 {
   "name": "@serverlessui/construct",
-  "version": "0.2.0-alpha.3",
+  "version": "0.2.0-alpha.4",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/types/src/index.d.ts",
