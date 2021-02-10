@@ -50,11 +50,18 @@ export const command: GluegunCommand = {
 
     const domainCli = configResult?.isEmpty ? '' : `-c domainName=${domain}`
 
+    toolbox.print.highlight(
+      `cdk synth ${prodCli} ${domainCli} ${zoneIdCli} ${certificateArnCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --quiet`
+    )
     child_process.execSync(
       `cdk synth ${prodCli} ${domainCli} ${zoneIdCli} ${certificateArnCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --quiet`,
       {
         stdio: 'inherit'
       }
+    )
+
+    toolbox.print.highlight(
+      `cdk deploy ${prodCli} ${domainCli} ${zoneIdCli} ${certificateArnCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --require-approval never`
     )
 
     child_process.execSync(
