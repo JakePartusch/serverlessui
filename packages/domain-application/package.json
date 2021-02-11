@@ -1,6 +1,6 @@
 {
   "name": "@serverlessui/domain-app",
-  "version": "0.2.0-alpha.7",
+  "version": "0.2.0-alpha.8",
   "description": "CDK Application to deploy a stack with a Hosted Zone and Wildcard Certificate",
   "main": "dist/index.js",
   "types": "dist/types/src/index.d.ts",
@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@aws-cdk/core": "1.85.0",
-    "@serverlessui/construct": "^0.2.0-alpha.7"
+    "@serverlessui/construct": "^0.2.0-alpha.8"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.1.1",
