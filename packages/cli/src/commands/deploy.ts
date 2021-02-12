@@ -37,33 +37,38 @@ export const command: GluegunCommand = {
       toolbox.print.info('Config file found, overriding defaults')
     }
 
-    const zoneIdCli = configResult?.isEmpty
-      ? ''
-      : `-c zoneId="${configResult?.config?.zoneId}"`
-    const certificateArnCli = configResult?.isEmpty
-      ? ''
-      : `-c certificateArn="${configResult?.config?.certificateArn}"`
-
-    const domainCli = configResult?.isEmpty
-      ? ''
-      : `-c domainName="${configResult?.config?.domain}"`
+    let domainConfigCli = ''
+    if (
+      configResult?.config?.zoneId &&
+      configResult?.config?.certificateArn &&
+      configResult?.config?.domain
+    ) {
+      toolbox.print.info(
+        'Using Zone ID, Certificate Arn, and Domain from config file'
+      )
+      domainConfigCli = `-c zoneId="${configResult?.config?.zoneId}" -c certificateArn="${configResult?.config?.certificateArn}" -c domainName="${configResult?.config?.domain}"`
+    } else {
+      toolbox.print.warning(
+        'Zone ID, Certificate Arn and Domain not specified, defaulting to cloudfront.net'
+      )
+    }
 
     toolbox.print.highlight(
-      `cdk synth ${prodCli} ${domainCli} ${zoneIdCli} ${certificateArnCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}" --quiet`
+      `cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}" --quiet`
     )
     child_process.execSync(
-      `cdk synth ${prodCli} ${domainCli} ${zoneIdCli} ${certificateArnCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}" --quiet`,
+      `cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}" --quiet`,
       {
         stdio: 'inherit'
       }
     )
 
     toolbox.print.highlight(
-      `cdk deploy ${prodCli} ${domainCli} ${zoneIdCli} ${certificateArnCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --require-approval never`
+      `cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --require-approval never`
     )
 
     child_process.execSync(
-      `cdk deploy ${prodCli} ${domainCli} ${zoneIdCli} ${certificateArnCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --require-approval never`,
+      `cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --require-approval never`,
       {
         stdio: 'inherit'
       }
