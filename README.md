@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="Serverless UI" src="./docs/images/undraw_To_the_stars_qhyy.svg" width="100" />
+    <img alt="Serverless UI" src="./docs/images/undraw_To_the_stars_qhyy.svg" width="150" />
 </p>
 <h1 align="center">
   Serverless UI
@@ -25,7 +25,7 @@
 
 - [Get Up and Running in 5 Minutes](#-get-up-and-running-in-5-minutes)
 - [CLI Reference](#-cli-reference)
-- [Under the Hood: Architecture and Constructs](#-under-the-hood)
+- [FAQ](#-faq)
 - [License](#license)
 
 ## 🚀 Get Up and Running in 5 Minutes
@@ -174,9 +174,11 @@ A minute or two after running this command, the deploy will "hang" while trying 
     };
     ```
 
-## Under the Hood
+## FAQ
 
-TODO
+- What about Netlify or Vercel?
+
+- What about AWS Amplify?
 
 ## License
 
