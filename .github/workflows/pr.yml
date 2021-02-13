@@ -20,6 +20,5 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - run: yarn install
-      - run: cd ./packages/cli
-      - run: yarn link
+      - run: cd ./packages/cli && yarn link
       - run: sui deploy --dir="./example-site/build" --functions="./example-site/functions"
