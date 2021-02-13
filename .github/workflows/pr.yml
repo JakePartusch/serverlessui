@@ -20,4 +20,5 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - run: npx lerna bootstrap
+      - run: npx lerna run prepack
       - run: yarn sui deploy --compiled-build --dir="./example-site/build" --functions="./example-site/functions"
