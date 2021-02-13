@@ -19,6 +19,5 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      - run: yarn install
-      - run: cd ./packages/cli && yarn link
+      - run: npx lerna bootstrap
       - run: yarn sui deploy --compiled-build --dir="./example-site/build" --functions="./example-site/functions"
