@@ -25,6 +25,7 @@
 
 - [Get Up and Running in 5 Minutes](#-get-up-and-running-in-5-minutes)
 - [CLI Reference](#-cli-reference)
+- [Continuous Integration](#-continuous-integration)
 - [FAQ](#-faq)
 - [License](#license)
 
@@ -174,11 +175,42 @@ A minute or two after running this command, the deploy will "hang" while trying 
     };
     ```
 
+## Continuous Integration
+
+### GitHub Actions
+
+```
+name: Serverless UI Build & Deploy Preview
+
+on: [pull_request]
+
+jobs:
+  deploy-pr-preview:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - run: npm ci
+      - run: npm run build
+      - run: npm install -g @serverlessui/cli
+      - run: npm install -g aws-cdk
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - run: sui deploy --dir=./build
+```
+
 ## FAQ
 
-- What about Netlify or Vercel?
-
-- What about AWS Amplify?
+- Q. How is this different than Netlify or Vercel?
+  - Serverless UI allows you to enjoy the benefits of pre-configured infrastructure without going through a middleman. This allows for fewer accounts, tighter security and seamless integration with a wealth of AWS services. Additionally, you receive these benefits "at cost" since this is deployed directly to your AWS account.
 
 ## License
 
