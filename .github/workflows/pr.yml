@@ -21,4 +21,5 @@ jobs:
           aws-region: us-east-1
       - run: yarn install
       - run: cd ./packages/cli && yarn link
+      - run: yarn link @serverlessui/cli
       - run: sui deploy --dir="./example-site/build" --functions="./example-site/functions"
