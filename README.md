@@ -15,11 +15,11 @@
   Serverless UI is a free, open source command-line utility for quickly building and deploying serverless applications to AWS
 </p>
 
-- **Own your code** Get all of the benefits and security of a hosted AWS application, without all of the setup. Deploy to a new AWS account, or an existing account and get running in five minutes!
-
 - **Full-stack Serverless** Deploy your back-end code alongside your UI for a seamless serverless experience. Serverless UI deploys your functions as Node.js 14.x lambdas behind an API Gateway and Cloudfront for an optimal blend of performance and scalability.
 
 - **Deploy Previews** Automatically deploy each iteration of your application as a separate stack to iterate and test with confidence.
+
+- **Own your code** Skip the 3rd Party services — get all of the benefits and security of a hosted AWS application, without a middleman. Deploy to a new AWS account, or an existing account and get running in five minutes!
 
 ## What’s In This Document
 
