@@ -6,33 +6,74 @@ import {
   IHostedZone,
 } from "@aws-cdk/aws-route53";
 import { CloudFrontTarget } from "@aws-cdk/aws-route53-targets";
-import { LambdaRestApi } from "@aws-cdk/aws-apigateway";
+import { IRestApi, LambdaRestApi } from "@aws-cdk/aws-apigateway";
 import {
   CloudFrontWebDistribution,
   CloudFrontAllowedMethods,
   SourceConfiguration,
   OriginProtocolPolicy,
+  IDistribution,
 } from "@aws-cdk/aws-cloudfront";
+import { IFunction } from "@aws-cdk/aws-lambda";
 import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
-import { BucketDeployment, Source } from "@aws-cdk/aws-s3-deployment";
+import { BucketDeployment, ISource } from "@aws-cdk/aws-s3-deployment";
 import { CfnOutput, Construct, RemovalPolicy } from "@aws-cdk/core";
-import { Bucket } from "@aws-cdk/aws-s3";
+import { Bucket, IBucket } from "@aws-cdk/aws-s3";
 import * as path from "path";
 
 interface Domain {
+  /**
+   * The custom domain name for this deployment
+   */
   domainName: string;
+  /**
+   * The hosted zone associated with the custom domain
+   */
   hostedZone: IHostedZone;
+  /**
+   * The wildcard certificate for this custom domain
+   */
   certificate: ICertificate;
 }
 
 interface ServerlessUIProps {
+  /**
+   * The unique id to use in generating the infrastructure and domain. Only used with custom domains
+   * Ex. https://{buildId}.my-domain.com
+   */
   buildId?: string;
+  /**
+   * The custom domain to use for this deployment
+   */
   domain?: Domain;
+  /**
+   * Paths to the entry files (JavaScript or TypeScript).
+   */
   apiEntries: string[];
-  uiEntry: string;
+  /**
+   * The sources from which to deploy the contents of the bucket.
+   */
+  uiSources: ISource[];
 }
 
 export class ServerlessUI extends Construct {
+  /**
+   * The s3 bucket the website is deployed to
+   */
+  readonly websiteBucket: IBucket;
+  /**
+   * The API Gateway APIs for the function deployments
+   */
+  readonly restApis: IRestApi[];
+  /**
+   * The Node.js Lambda Functions deployed
+   */
+  readonly functions: IFunction[];
+  /**
+   * The Cloudfront web distribution for the website and API Gateways
+   */
+  readonly distribution: IDistribution;
+
   constructor(scope: Construct, id: string, props: ServerlessUIProps) {
     super(scope, id);
 
@@ -64,6 +105,7 @@ export class ServerlessUI extends Construct {
 
     const originConfigs: SourceConfiguration[] = restApis.map((restApi, i) => ({
       customOriginSource: {
+        //TODO: remove region reference?
         domainName: `${restApi.restApiId}.execute-api.us-east-1.amazonaws.com`,
         originPath: "/prod",
       },
@@ -103,7 +145,7 @@ export class ServerlessUI extends Construct {
     );
 
     new BucketDeployment(this, "BucketDeployment", {
-      sources: [Source.asset(props.uiEntry)],
+      sources: props.uiSources,
       destinationBucket: websiteBucket!,
       distribution: cloudFrontWebDistribution,
       retainOnDelete: false,
@@ -151,5 +193,10 @@ export class ServerlessUI extends Construct {
         });
       }
     });
+
+    this.websiteBucket = websiteBucket;
+    this.restApis = restApis;
+    this.functions = lambdas;
+    this.distribution = cloudFrontWebDistribution;
   }
 }
