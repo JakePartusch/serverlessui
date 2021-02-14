@@ -14,7 +14,7 @@ import {
   OriginProtocolPolicy,
 } from "@aws-cdk/aws-cloudfront";
 import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
-import { BucketDeployment, Source } from "@aws-cdk/aws-s3-deployment";
+import { BucketDeployment, ISource, Source } from "@aws-cdk/aws-s3-deployment";
 import { CfnOutput, Construct, RemovalPolicy } from "@aws-cdk/core";
 import { Bucket } from "@aws-cdk/aws-s3";
 import * as path from "path";
@@ -26,10 +26,23 @@ interface Domain {
 }
 
 interface ServerlessUIProps {
+  /**
+   * The unique id to use in generating the infrastructure and domain
+   * Ex. https://{buildId}.my-domain.com
+   */
   buildId?: string;
+  /**
+   * The custom domain to use for this deployment
+   */
   domain?: Domain;
+  /**
+   * Paths to the entry files (JavaScript or TypeScript).
+   */
   apiEntries: string[];
-  uiEntry: string;
+  /**
+   * The sources from which to deploy the contents of the bucket.
+   */
+  uiSources: ISource[];
 }
 
 export class ServerlessUI extends Construct {
@@ -103,7 +116,7 @@ export class ServerlessUI extends Construct {
     );
 
     new BucketDeployment(this, "BucketDeployment", {
-      sources: [Source.asset(props.uiEntry)],
+      sources: props.uiSources,
       destinationBucket: websiteBucket!,
       distribution: cloudFrontWebDistribution,
       retainOnDelete: false,
