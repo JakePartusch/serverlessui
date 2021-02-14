@@ -94,6 +94,11 @@ export class ServerlessUI extends Construct {
       return new NodejsFunction(this, `NodejsFunction-${functionFile.name}`, {
         entry: functionFile.entry,
         handler: "handler",
+        bundling: {
+          externalModules: [
+            "aws-sdk", // Use the 'aws-sdk' available in the Lambda runtime
+          ],
+        },
       });
     });
 
