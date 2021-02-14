@@ -13,10 +13,10 @@
     "prepack": "yarn rimraf && yarn build"
   },
   "dependencies": {
-    "@aws-cdk/aws-certificatemanager": "1.85.0",
-    "@aws-cdk/aws-route53": "1.85.0",
-    "@aws-cdk/aws-s3-deployment": "1.85.0",
-    "@aws-cdk/core": "1.85.0",
+    "@aws-cdk/aws-certificatemanager": "1.89.0",
+    "@aws-cdk/aws-route53": "1.89.0",
+    "@aws-cdk/aws-s3-deployment": "1.89.0",
+    "@aws-cdk/core": "1.89.0",
     "@serverlessui/construct": "^0.3.1-alpha.1",
     "nanoid": "^3.1.20"
   },
