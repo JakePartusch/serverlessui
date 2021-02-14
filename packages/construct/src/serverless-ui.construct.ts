@@ -54,6 +54,18 @@ interface ServerlessUIProps {
    * The sources from which to deploy the contents of the bucket.
    */
   uiSources: ISource[];
+  /**
+   * Key-value pairs that Lambda caches and makes available for your Lambda functions.
+   *
+   * Use environment variables to apply configuration changes, such
+   * as test and production environment configurations, without changing your
+   * Lambda function source code.
+   *
+   * @default - No environment variables.
+   */
+  readonly apiEnvironment?: {
+    [key: string]: string;
+  };
 }
 
 export class ServerlessUI extends Construct {
@@ -98,6 +110,9 @@ export class ServerlessUI extends Construct {
           externalModules: [
             "aws-sdk", // Use the 'aws-sdk' available in the Lambda runtime
           ],
+        },
+        environment: {
+          ...props.apiEnvironment,
         },
       });
     });
