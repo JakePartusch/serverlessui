@@ -17,15 +17,15 @@
 
 - **Bring your own UI** Doesn't matter if it's React, Vue, Gatsby, or JQuery. If it compiles down to static files, then it is supported.
 
-- **Serverless Functions** Your functions become endpoints, automatically. Serverless UI deploys your functions as Node.js 14.x lambdas behind an API Gateway and CDN for an optimal blend of performance and scalability.
+- **Serverless Functions** Your functions become endpoints, automatically. Serverless UI deploys your functions as Node.js lambdas behind a CDN and API Gateway for an optimal blend of performance and scalability.
 
 - **Deploy Previews** Automatically deploy each iteration of your application with a separate URL to continuously integrate and test with confidence.
 
-- **Custom Domains** Quickly configure a custom domain to take advantage of production deploys.
+- **Custom Domains** Quickly configure a custom domain to take advantage of production deploys!
 
-- **TypeScript Support** Use TypeScript up and down the stack — as little or as much as you'd like!
+- **TypeScript Support** Write your serverless functions in JavaScript or TypeScript. Either way, they'll be bundled down extremely quickly with esbuild and deployed as individual Node.js 14 lambdas.
 
-- **Own your code** Skip the 3rd Party services — get all of the benefits and security of a hosted AWS application, without a middleman. Deploy to a new AWS account, or an existing account and get running in five minutes!
+- **Own your code** Skip the 3rd Party services — get all of the benefits and security of a hosted AWS application, without going through a middleman. Deploy to a new AWS account, or an existing account and get up and running in five minutes!
 
 ## What’s In This Document
 
