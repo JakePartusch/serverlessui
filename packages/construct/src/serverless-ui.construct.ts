@@ -14,7 +14,7 @@ import {
   OriginProtocolPolicy,
   IDistribution,
 } from "@aws-cdk/aws-cloudfront";
-import { IFunction } from "@aws-cdk/aws-lambda";
+import { IFunction, Runtime } from "@aws-cdk/aws-lambda";
 import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
 import { BucketDeployment, ISource } from "@aws-cdk/aws-s3-deployment";
 import { CfnOutput, Construct, RemovalPolicy } from "@aws-cdk/core";
@@ -106,6 +106,7 @@ export class ServerlessUI extends Construct {
       return new NodejsFunction(this, `NodejsFunction-${functionFile.name}`, {
         entry: functionFile.entry,
         handler: "handler",
+        runtime: Runtime.NODEJS_14_X,
         bundling: {
           externalModules: [
             "aws-sdk", // Use the 'aws-sdk' available in the Lambda runtime
