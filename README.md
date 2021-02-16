@@ -15,11 +15,17 @@
   Serverless UI is a free, open source command-line utility for quickly building and deploying serverless applications to AWS
 </p>
 
-- **Full-stack Serverless** Deploy your back-end code alongside your UI for a seamless serverless experience. Serverless UI deploys your functions as Node.js 14.x lambdas behind an API Gateway and Cloudfront for an optimal blend of performance and scalability.
+- **Bring your own UI** Doesn't matter if it's React, Vue, Gatsby, or JQuery. If it compiles down to static files, then it is supported.
 
-- **Deploy Previews** Automatically deploy each iteration of your application as a separate stack to iterate and test with confidence.
+- **Serverless Functions** Your functions become endpoints, automatically. Serverless UI deploys your functions as Node.js lambdas behind a CDN and API Gateway for an optimal blend of performance and scalability.
 
-- **Own your code** Skip the 3rd Party services — get all of the benefits and security of a hosted AWS application, without a middleman. Deploy to a new AWS account, or an existing account and get running in five minutes!
+- **Deploy Previews** Automatically deploy each iteration of your application with a separate URL to continuously integrate and test with confidence.
+
+- **Custom Domains** Quickly configure a custom domain to take advantage of production deploys!
+
+- **TypeScript Support** Write your serverless functions in JavaScript or TypeScript. Either way, they'll be bundled down extremely quickly with esbuild and deployed as individual Node.js 14 lambdas.
+
+- **Own your code** Skip the 3rd Party services — get all of the benefits and security of a hosted AWS application, without going through a middleman. Deploy to a new AWS account, or an existing account and get up and running in five minutes!
 
 ## What’s In This Document
 
