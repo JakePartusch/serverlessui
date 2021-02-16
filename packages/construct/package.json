@@ -1,6 +1,6 @@
 {
   "name": "@serverlessui/construct",
-  "version": "0.3.1-alpha.2",
+  "version": "0.4.0",
   "description": "CDK constructs to support Serverless UI",
   "main": "dist/index.js",
   "types": "dist/types/src/index.d.ts",
