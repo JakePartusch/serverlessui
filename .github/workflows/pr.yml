@@ -33,12 +33,12 @@ jobs:
               key.startsWith("ServerlessUI")
             );
             const template = require(`${process.env.GITHUB_WORKSPACE}/cdk.out/${stackName}.template.json`);
-            const baseUrl = Object.keys(template.Outputs).find((key) =>
+            const baseUrlKey = Object.keys(template.Outputs).find((key) =>
               key.startsWith("ServerlessUIBaseUrl")
             );
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `✅ Your deploy preview is ready: ${template.Outputs[baseUrl].Value}`,
+              body: `✅ Your deploy preview is ready: ${template.Outputs[baseUrlKey].Value}`,
             });

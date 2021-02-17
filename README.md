@@ -211,6 +211,25 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - run: sui deploy --dir=./build
+      - name: Add PR Comment
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const manifest = require(`${process.env.GITHUB_WORKSPACE}/cdk.out/manifest.json`);
+            const stackName = Object.keys(manifest.artifacts).find((key) =>
+              key.startsWith("ServerlessUI")
+            );
+            const template = require(`${process.env.GITHUB_WORKSPACE}/cdk.out/${stackName}.template.json`);
+            const baseUrlKey = Object.keys(template.Outputs).find((key) =>
+              key.startsWith("ServerlessUIBaseUrl")
+            );
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `✅ Your deploy preview is ready: ${template.Outputs[baseUrlKey].Value}`,
+            });
 ```
 
 ## FAQ
