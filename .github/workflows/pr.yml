@@ -13,12 +13,20 @@ jobs:
         with:
           node-version: "14.x"
       - run: npm install -g aws-cdk
+      - run: npm install -g lerna
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      - run: npx lerna bootstrap
-      - run: npx lerna run prepack
+      - run: lerna bootstrap
+      - run: lerna run prepack
       - run: yarn sui deploy --compiled-build --dir="./example-site/build" --functions="./example-site/functions"
+      - name: Add commit comment
+        run: |
+          jq -nc '{"body": "test comment"}' | \
+          curl -sL  -X POST -d @- \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/comments"
