@@ -1,6 +1,6 @@
 {
   "name": "@serverlessui/cli",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Serverless UI command-line utility for deploying serverless applications to AWS",
   "author": "Jake Partusch <jakepartusch@gmail.com>",
   "license": "MIT",
@@ -42,8 +42,8 @@
     "bin"
   ],
   "dependencies": {
-    "@serverlessui/domain-app": "^0.5.0",
-    "@serverlessui/serverless-app": "^0.5.0",
+    "@serverlessui/domain-app": "^0.5.1",
+    "@serverlessui/serverless-app": "^0.5.1",
     "cosmiconfig": "^7.0.0",
     "glob": "^7.1.6",
     "gluegun": "latest"
