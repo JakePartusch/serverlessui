@@ -2,6 +2,21 @@
   "name": "@serverlessui/serverless-app",
   "version": "0.5.0",
   "description": "CDK Application to deploy a stack with a Hosted Zone and Wildcard Certificate",
+  "license": "MIT",
+  "homepage": "https://github.com/JakePartusch/serverlessui/tree/main#README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JakePartusch/serverlessui.git",
+    "directory": "packages/domain-application"
+  },
+  "keywords": [
+    "cli",
+    "serverless",
+    "cdk"
+  ],
+  "bugs": {
+    "url": "https://github.com/JakePartusch/serverlessui/issues"
+  },
   "main": "dist/index.js",
   "types": "dist/types/src/index.d.ts",
   "publishConfig": {
@@ -32,7 +47,5 @@
     "LICENSE",
     "readme.md"
   ],
-  "author": "Jake Partusch <jakepartusch@gmail.com>",
-  "license": "MIT",
   "gitHead": "4a136cf3777ae864939139dcaee277e9213fe925"
 }
