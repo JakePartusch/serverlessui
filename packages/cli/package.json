@@ -1,7 +1,22 @@
 {
   "name": "@serverlessui/cli",
   "version": "0.5.0",
-  "description": "Serverless UI CLI",
+  "description": "Serverless UI command-line utility for deploying serverless applications to AWS",
+  "author": "Jake Partusch <jakepartusch@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/JakePartusch/serverlessui/tree/main#README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JakePartusch/serverlessui.git",
+    "directory": "packages/cli"
+  },
+  "keywords": [
+    "cli",
+    "serverless"
+  ],
+  "bugs": {
+    "url": "https://github.com/JakePartusch/serverlessui/issues"
+  },
   "types": "dist/types/src/cli.d.ts",
   "bin": {
     "sui": "bin/cli"
@@ -26,8 +41,6 @@
     "docs",
     "bin"
   ],
-  "author": "Jake Partusch <jakepartusch@gmail.com>",
-  "license": "MIT",
   "dependencies": {
     "@serverlessui/domain-app": "^0.5.0",
     "@serverlessui/serverless-app": "^0.5.0",
