@@ -12,18 +12,18 @@
   Deploying Websites to AWS on Easy Mode
 </h3>
 <p align="center">
-  Serverless UI is a free, open source command-line utility for quickly building and deploying serverless applications to AWS
+  Serverless UI is a free, open source command-line utility for quickly building and deploying serverless applications on AWS
 </p>
 
-- **Bring your own UI** Doesn't matter if it's React, Vue, Svelte, or JQuery. If it compiles down to static files, then it is supported.
+- **Bring your own UI** It doesn't matter if it's React, Vue, Svelte or JQuery. If it compiles down to static files, then it is supported.
 
-- **Serverless Functions** Your functions become endpoints, automatically. Serverless UI deploys your functions as Node.js lambdas behind a CDN and API Gateway for an optimal blend of performance and scalability.
+- **Serverless Functions** Your functions become endpoints, automatically. Serverless UI deploys each function in your `/functions` directory as a Node.js lambda behind a CDN and API Gateway for an optimal blend of performance and scalability.
 
 - **Deploy Previews** Automatically deploy each iteration of your application with a separate URL to continuously integrate and test with confidence.
 
 - **Custom Domains** Quickly configure a custom domain to take advantage of production deploys!
 
-- **TypeScript Support** Write your serverless functions in JavaScript or TypeScript. Either way, they'll be bundled down extremely quickly with esbuild and deployed as individual Node.js 14 lambdas.
+- **TypeScript Support** Write your serverless functions in JavaScript or TypeScript. Either way, they'll be bundled down extremely quickly and deployed as Node.js 14 lambdas.
 
 - **Own your code** Skip the 3rd Party services — get all of the benefits and security of a hosted AWS application, without going through a middleman. Deploy to a new AWS account, or an existing account and get up and running in five minutes!
 
@@ -57,7 +57,7 @@ You can get a new Serverless UI site deployed to you AWS account in just a few s
 
 1. **Bootstrap your AWS Environment**
 
-   Next, bootstrap the CDK environment for quicker subsequent deployments
+   Next, specify your account and region to bootstrap the CDK environment for quicker subsequent deployments
 
    ```shell
    cdk bootstrap aws://ACCOUNT-NUMBER-1/REGION-1
@@ -65,7 +65,7 @@ You can get a new Serverless UI site deployed to you AWS account in just a few s
 
 1. **Deploy your static website**
 
-   Next, tell the Serverless UI where to find your website
+   Next, tell the Serverless UI where to find your website's static files
 
    ```shell
    sui deploy --dir="./dist"
@@ -84,11 +84,11 @@ sui deploy
 
 #### Options
 
-|    Option     | Description                                        |     Default     |
-| :-----------: | -------------------------------------------------- | :-------------: |
-|    `--dir`    | The directory of your website                      |   `"./dist"`    |
-| `--functions` | The directory of the functions to deploy           | `"./functions"` |
-|   `--prod`    | Custom Domains only: `false` will deploy a preview |     `false`     |
+|    Option     | Description                                           |     Default     |
+| :-----------: | ----------------------------------------------------- | :-------------: |
+|    `--dir`    | The directory of your website's static files          |   `"./dist"`    |
+| `--functions` | The directory of the functions to deploy as endpoints | `"./functions"` |
+|   `--prod`    | Custom Domains only: `false` will deploy a preview    |     `false`     |
 
 > Note: The `--dir` directory should be only static files. You may need to run a build step prior to deploying
 
@@ -183,7 +183,13 @@ A minute or two after running this command, the deploy will "hang" while trying 
 
 ## Continuous Integration
 
-### GitHub Actions
+Since Serverless UI is a command-line tool available via npm, it will work in almost any CI environment.
+
+### Examples
+
+#### GitHub Actions
+
+> Note: Checkout the action in this repo for a live example https://github.com/JakePartusch/serverlessui/actions
 
 ```
 name: Serverless UI Build & Deploy Preview
