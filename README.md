@@ -15,7 +15,7 @@
   Serverless UI is a free, open source command-line utility for quickly building and deploying serverless applications to AWS
 </p>
 
-- **Bring your own UI** Doesn't matter if it's React, Vue, Gatsby, or JQuery. If it compiles down to static files, then it is supported.
+- **Bring your own UI** Doesn't matter if it's React, Vue, Svelte, or JQuery. If it compiles down to static files, then it is supported.
 
 - **Serverless Functions** Your functions become endpoints, automatically. Serverless UI deploys your functions as Node.js lambdas behind a CDN and API Gateway for an optimal blend of performance and scalability.
 
