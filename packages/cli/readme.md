@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="Serverless UI" src="./docs/images/undraw_To_the_stars_qhyy.svg" width="150" />
+    <img alt="Serverless UI" src="https://raw.githubusercontent.com/JakePartusch/serverlessui/f42f0226c34d12a2564b8bc0881391cfa7c6c7d1/docs/images/undraw_To_the_stars_qhyy.svg?token=ABRAMTDZOE7NJ24HXWKSG6LAF4USI" width="150" />
 </p>
 <h1 align="center">
   Serverless UI
@@ -90,16 +90,16 @@ A minute or two after running this command, the deploy will "hang" while trying 
     Find your Hosted Zone and take note of the Zone Id and Name Servers
 
     <p align="center">
-        <img alt="Serverless UI" src="./docs/images/hosted-zone-id.png" width="600" />
+        <img alt="Serverless UI" src="https://raw.githubusercontent.com/JakePartusch/serverlessui/main/docs/images/hosted-zone-id.png?token=ABRAMTGFRF7MZ2J4BVET6O3AF4UL4" width="600" />
     </p>
     <p align="center">
-        <img alt="Serverless UI" src="./docs/images/name-servers.png" width="600" />
+        <img alt="Serverless UI" src="https://raw.githubusercontent.com/JakePartusch/serverlessui/main/docs/images/name-servers.png?token=ABRAMTEGNZYDKXL2XVEFYVTAF4UOQ" width="600" />
     </p>
 
 2.  **Update the Nameservers on your Domain Registrar's website (eg. Namecheap)**
 
     <p align="center">
-        <img alt="Serverless UI" src="./docs/images/domain-registrar.png" width="600" />
+        <img alt="Serverless UI" src="https://raw.githubusercontent.com/JakePartusch/serverlessui/main/docs/images/domain-registrar.png?token=ABRAMTAEXGAMBQTTCY4ZLXLAF4UKM" width="600" />
     </p>
 
 3.  **Wait**
