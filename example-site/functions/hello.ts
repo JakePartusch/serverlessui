@@ -9,7 +9,7 @@ export const handler = async (
 ): Promise<APIGatewayProxyResult> => {
   console.log(JSON.stringify(event, null, 2));
   const response: ProxyResponse = {
-    data: "hello world",
+    data: "Hello World!",
   };
   return {
     statusCode: 200,

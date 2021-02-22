@@ -32,6 +32,7 @@
 - [Get Up and Running in 5 Minutes](#-get-up-and-running-in-5-minutes)
 - [CLI Reference](#-cli-reference)
 - [Continuous Integration](#-continuous-integration)
+- [Advanced Use Cases](#-advanced-use-cases)
 - [FAQ](#-faq)
 - [License](#license)
 
@@ -191,7 +192,7 @@ Since Serverless UI is a command-line tool available via npm, it will work in al
 
 > Note: Checkout the action in this repo for a live example https://github.com/JakePartusch/serverlessui/actions
 
-```
+```yaml
 name: Serverless UI Build & Deploy Preview
 
 on: [pull_request]
@@ -205,7 +206,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: '12.x'
+          node-version: "12.x"
       - run: npm ci
       - run: npm run build
       - run: npm install -g @serverlessui/cli
@@ -236,6 +237,44 @@ jobs:
               repo: context.repo.repo,
               body: `✅ Your deploy preview is ready: ${template.Outputs[baseUrlKey].Value}`,
             });
+```
+
+## 👩‍🔬 Advanced Use Cases
+
+For existing serverless projects or those that may have additional CloudFormation and/or CDK infrastructure, Serverless UI provides CDK constructs for each of the cli actions:
+
+```javascript
+import { ServerlessUI, DomainCertificate } from '@serverlessui/construct;
+```
+
+### Examples
+
+#### Serverless UI
+
+For a full-featured example, check out:
+https://github.com/JakePartusch/serverlessui-advanced-example
+
+```javascript
+const { functions } = new ServerlessUI(this, "ServerlessUI", {
+  buildId: "advanced-example",
+  uiSources: [Source.asset(`${__dirname}/../build`)],
+  apiEntries: [`${__dirname}/../functions/graphql.ts`],
+  apiEnvironment: {
+    TABLE_NAME: table.tableName,
+  },
+  domain: {
+    domainName: "serverlessui.app",
+    hostedZone: HostedZone.fromHostedZoneAttributes(this, "HostedZone", {
+      hostedZoneId: "Z1XXXXXXXXXXXXX",
+      zoneName: "serverlessui.app",
+    }),
+    certificate: Certificate.fromCertificateArn(
+      this,
+      "Certificate",
+      "arn:aws:acm:us-east-1:xxxxxxxxxx:certificate/xxxxxx-xxxx-xxxx-xxxxxx"
+    ),
+  },
+});
 ```
 
 ## FAQ
