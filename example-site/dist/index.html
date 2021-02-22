@@ -13,7 +13,7 @@
       window.addEventListener("load", (event) => {
         fetch("/api/hello").then((response) => {
           response.json().then((json) => {
-            document.getElementById("hello").textContent(json.data);
+            document.getElementById("hello").textContent = json.data;
           });
         });
       });
