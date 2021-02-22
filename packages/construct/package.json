@@ -1,6 +1,6 @@
 {
   "name": "@serverlessui/construct",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "CDK constructs to support Serverless UI",
   "license": "MIT",
   "homepage": "https://github.com/JakePartusch/serverlessui/tree/main#README.md",
