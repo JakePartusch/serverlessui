@@ -141,8 +141,8 @@ export class ServerlessUI extends Construct {
         {
           pathPattern: `/api/${functionFiles[i].name}`,
           allowedMethods: CloudFrontAllowedMethods.ALL,
-          maxTtl: Duration.millis(50),
-          defaultTtl: Duration.millis(10),
+          maxTtl: Duration.seconds(1),
+          defaultTtl: Duration.seconds(0),
         },
       ],
     }));
