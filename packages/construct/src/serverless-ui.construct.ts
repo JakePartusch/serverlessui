@@ -17,7 +17,13 @@ import {
 import { IFunction, Runtime } from "@aws-cdk/aws-lambda";
 import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
 import { BucketDeployment, ISource } from "@aws-cdk/aws-s3-deployment";
-import { CfnOutput, Construct, RemovalPolicy } from "@aws-cdk/core";
+import {
+  CfnOutput,
+  Construct,
+  Duration,
+  RemovalPolicy,
+  Stack,
+} from "@aws-cdk/core";
 import { Bucket, IBucket } from "@aws-cdk/aws-s3";
 import * as path from "path";
 
@@ -126,14 +132,17 @@ export class ServerlessUI extends Construct {
 
     const originConfigs: SourceConfiguration[] = restApis.map((restApi, i) => ({
       customOriginSource: {
-        //TODO: remove region reference?
-        domainName: `${restApi.restApiId}.execute-api.us-east-1.amazonaws.com`,
+        domainName: `${restApi.restApiId}.execute-api.${
+          Stack.of(this).region
+        }.amazonaws.com`,
         originPath: "/prod",
       },
       behaviors: [
         {
           pathPattern: `/api/${functionFiles[i].name}`,
           allowedMethods: CloudFrontAllowedMethods.ALL,
+          maxTtl: Duration.millis(50),
+          defaultTtl: Duration.millis(10),
         },
       ],
     }));
