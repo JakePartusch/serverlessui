@@ -31,9 +31,9 @@
 
 - [Get Up and Running in 5 Minutes](#-get-up-and-running-in-5-minutes)
 - [CLI Reference](#-cli-reference)
-- [Continuous Integration](#-continuous-integration)
+- [Continuous Integration](#continuous-integration)
 - [Advanced Use Cases](#-advanced-use-cases)
-- [FAQ](#-faq)
+- [FAQ](#faq)
 - [License](#license)
 
 ## 🚀 Get Up and Running in 5 Minutes
