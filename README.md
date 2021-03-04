@@ -171,7 +171,7 @@ A minute or two after running this command, the deploy will "hang" while trying 
 
     Place the config file in the root of your project
 
-    > serverless.config.js
+    > serverlessui.config.js
 
     ```js
     module.exports = {
