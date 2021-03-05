@@ -5,6 +5,7 @@ import { cosmiconfigSync } from 'cosmiconfig'
 const serverlessApplicationPath = require.resolve(
   '@serverlessui/serverless-app'
 )
+import { Builder } from '@sls-next/lambda-at-edge'
 
 export const command: GluegunCommand = {
   name: 'deploy',
@@ -12,18 +13,23 @@ export const command: GluegunCommand = {
   description: 'Deploy your website and serverless functions',
   run: async toolbox => {
     const { parameters } = toolbox
-
     const { options } = parameters
 
     const { functions = './functions', dir = './dist', prod = false } = options
-
     const files = glob.sync(`${functions}/**/*.{js,ts}`)
-
     const explorerSync = cosmiconfigSync('serverlessui')
     const configResult = explorerSync.search()
 
     const apiFiles = files.join(',')
     const prodCli = prod ? '-c prod=true' : ''
+
+    const isNextAppCli = dir.includes('.next') ? '-c isNextApp=true' : ''
+
+    if (isNextAppCli) {
+      toolbox.print.info('Building Next.js app')
+      const builder = new Builder('.', './build', { args: ['build'] })
+      await builder.build()
+    }
 
     if (apiFiles.length === 0) {
       toolbox.print.info(`No functions found in directory ${functions}`)
@@ -54,21 +60,21 @@ export const command: GluegunCommand = {
     }
 
     toolbox.print.highlight(
-      `cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}" --quiet`
+      `cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" ${isNextAppCli} -a "node ${serverlessApplicationPath}" --quiet`
     )
     child_process.execSync(
-      `cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}" --quiet`,
+      `cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" ${isNextAppCli} -a "node ${serverlessApplicationPath}" --quiet`,
       {
         stdio: 'inherit'
       }
     )
 
     toolbox.print.highlight(
-      `cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --require-approval never`
+      `cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} ${isNextAppCli} -a "node ${serverlessApplicationPath}" --require-approval never`
     )
 
     child_process.execSync(
-      `cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --require-approval never`,
+      `cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} ${isNextAppCli} -a "node ${serverlessApplicationPath}" --require-approval never`,
       {
         stdio: 'inherit'
       }

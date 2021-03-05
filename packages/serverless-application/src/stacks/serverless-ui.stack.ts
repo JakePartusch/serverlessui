@@ -3,6 +3,7 @@ import { Certificate } from "@aws-cdk/aws-certificatemanager";
 import { HostedZone } from "@aws-cdk/aws-route53";
 import { Source } from "@aws-cdk/aws-s3-deployment";
 import { ServerlessUI } from "@serverlessui/construct";
+import { NextJSLambdaEdge } from "@sls-next/cdk-construct";
 
 interface ServerlessUIStackProps extends StackProps {
   buildId?: string;
@@ -11,6 +12,7 @@ interface ServerlessUIStackProps extends StackProps {
   certificateArn?: string;
   apiEntries: string[];
   uiEntry: string;
+  isNextApp: boolean;
 }
 
 export class ServerlessUIStack extends Stack {
@@ -36,11 +38,22 @@ export class ServerlessUIStack extends Stack {
             ),
           }
         : undefined;
-
-    new ServerlessUI(this, "ServerlessUI", {
-      ...props,
-      uiSources: [Source.asset(props.uiEntry)],
-      domain,
-    });
+    if (props.isNextApp) {
+      new NextJSLambdaEdge(this, "ServerlessUINext", {
+        serverlessBuildOutDir: "./build",
+        domain,
+        name: {
+          apiLambda: `ServerlessUINext-Api-${props.buildId}`,
+          defaultLambda: `ServerlessUINext-Default-${props.buildId}`,
+          imageLambda: `ServerlessUINext-Image-${props.buildId}`,
+        },
+      });
+    } else {
+      new ServerlessUI(this, "ServerlessUI", {
+        ...props,
+        uiSources: [Source.asset(props.uiEntry)],
+        domain,
+      });
+    }
   }
 }
