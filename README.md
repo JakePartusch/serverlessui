@@ -138,6 +138,14 @@ sui configure-domain [--domain]
 | :--------: | ------------------ | :-----: |
 | `--domain` | Your custom domain |  None   |
 
+#### Examples
+
+Deploy a Hosted Zone and Certificate to us-east-1 (required region for Cloudfront)
+
+```shell
+sui configure-domain --domain="serverlessui.app"
+```
+
 #### Additional Steps
 
 A minute or two after running this command, the deploy will "hang" while trying to validate the domain prior to creating the wildcard certificate.
