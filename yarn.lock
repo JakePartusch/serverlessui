@@ -86,6 +86,18 @@
     "@aws-cdk/cx-api" "1.92.0"
     constructs "^3.2.0"
 
+"@aws-cdk/aws-cloudfront-origins@1.92.0":
+  version "1.92.0"
+  resolved "https://registry.yarnpkg.com/@aws-cdk/aws-cloudfront-origins/-/aws-cloudfront-origins-1.92.0.tgz#5d94b35de191234b31d7a53ac37ffd6a163f52ed"
+  integrity sha512-UmgJxdcDsfdl3emPCggO7js90Hdnzb6iinFPu7ehiCSAprSGfyQ325VepwCe2vg1VGjZ4sIjZykrzIuSc7N84Q==
+  dependencies:
+    "@aws-cdk/aws-cloudfront" "1.92.0"
+    "@aws-cdk/aws-elasticloadbalancingv2" "1.92.0"
+    "@aws-cdk/aws-iam" "1.92.0"
+    "@aws-cdk/aws-s3" "1.92.0"
+    "@aws-cdk/core" "1.92.0"
+    constructs "^3.2.0"
+
 "@aws-cdk/aws-cloudfront@1.92.0":
   version "1.92.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-cloudfront/-/aws-cloudfront-1.92.0.tgz#3d14e9f25ff5570ff5f5b2efe92382ca75d2273d"
