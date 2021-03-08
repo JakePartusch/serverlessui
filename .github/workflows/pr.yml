@@ -22,7 +22,7 @@ jobs:
           aws-region: us-west-2
       - run: lerna bootstrap
       - run: lerna run prepack
-      - run: cdk examples/simple && yarn install
+      - run: cd examples/simple && yarn install
       - run: yarn sui deploy --compiled-build --dir="./examples/simple/dist" --functions="./examples/simple/functions"
       - name: Add PR Comment
         uses: actions/github-script@v3
