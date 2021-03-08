@@ -6,5 +6,6 @@ Try it yourself with:
 
 ```shell
 npm install -g @serverlessui/cli
+npm install
 sui deploy
 ```

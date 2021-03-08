@@ -125,6 +125,9 @@ export class ServerlessUI extends Construct {
       });
     });
 
+    /**
+     * Build a Cloudfront behavior for each api function that allows all HTTP Methods and has caching disabled.
+     */
     const additionalBehaviors: Record<
       string,
       BehaviorOptions
@@ -136,13 +139,16 @@ export class ServerlessUI extends Construct {
       const newAdditionalBehaviors = { ...previous };
       newAdditionalBehaviors[`/api/${functionName}`] = {
         origin: new HttpOrigin(restApiOrigin, { originPath: "/prod" }),
-        cachePolicy: CachePolicy.CACHING_DISABLED, //disable cache since this is an API
+        cachePolicy: CachePolicy.CACHING_DISABLED,
         allowedMethods: AllowedMethods.ALLOW_ALL,
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       };
       return newAdditionalBehaviors;
     }, {} as Record<string, BehaviorOptions>);
 
+    /**
+     * Creating a Cloudfront distribution for the website bucket with an aggressive caching policy
+     */
     const distribution = new Distribution(this, "Distribution", {
       defaultBehavior: {
         origin: new S3Origin(websiteBucket),
