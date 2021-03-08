@@ -18,13 +18,7 @@ import {
 import { IFunction, Runtime } from "@aws-cdk/aws-lambda";
 import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
 import { BucketDeployment, ISource } from "@aws-cdk/aws-s3-deployment";
-import {
-  CfnOutput,
-  Construct,
-  Duration,
-  RemovalPolicy,
-  Stack,
-} from "@aws-cdk/core";
+import { CfnOutput, Construct, RemovalPolicy, Stack } from "@aws-cdk/core";
 import { Bucket, IBucket } from "@aws-cdk/aws-s3";
 import * as path from "path";
 import { HttpOrigin, S3Origin } from "@aws-cdk/aws-cloudfront-origins";
@@ -102,7 +96,6 @@ export class ServerlessUI extends Construct {
       autoDeleteObjects: true,
       publicReadAccess: true,
       websiteIndexDocument: "index.html",
-      websiteErrorDocument: "error.html",
     });
 
     const functionFiles = props.apiEntries.map((apiEntry) => ({
