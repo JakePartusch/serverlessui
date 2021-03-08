@@ -8,24 +8,20 @@ import {
 import { CloudFrontTarget } from "@aws-cdk/aws-route53-targets";
 import { IRestApi, LambdaRestApi } from "@aws-cdk/aws-apigateway";
 import {
-  CloudFrontWebDistribution,
-  CloudFrontAllowedMethods,
-  SourceConfiguration,
-  OriginProtocolPolicy,
   IDistribution,
+  Distribution,
+  ViewerProtocolPolicy,
+  BehaviorOptions,
+  AllowedMethods,
+  CachePolicy,
 } from "@aws-cdk/aws-cloudfront";
 import { IFunction, Runtime } from "@aws-cdk/aws-lambda";
 import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
 import { BucketDeployment, ISource } from "@aws-cdk/aws-s3-deployment";
-import {
-  CfnOutput,
-  Construct,
-  Duration,
-  RemovalPolicy,
-  Stack,
-} from "@aws-cdk/core";
+import { CfnOutput, Construct, RemovalPolicy, Stack } from "@aws-cdk/core";
 import { Bucket, IBucket } from "@aws-cdk/aws-s3";
 import * as path from "path";
+import { HttpOrigin, S3Origin } from "@aws-cdk/aws-cloudfront-origins";
 
 interface Domain {
   /**
@@ -100,7 +96,6 @@ export class ServerlessUI extends Construct {
       autoDeleteObjects: true,
       publicReadAccess: true,
       websiteIndexDocument: "index.html",
-      websiteErrorDocument: "error.html",
     });
 
     const functionFiles = props.apiEntries.map((apiEntry) => ({
@@ -130,54 +125,55 @@ export class ServerlessUI extends Construct {
       });
     });
 
-    const originConfigs: SourceConfiguration[] = restApis.map((restApi, i) => ({
-      customOriginSource: {
-        domainName: `${restApi.restApiId}.execute-api.${
-          Stack.of(this).region
-        }.amazonaws.com`,
-        originPath: "/prod",
-      },
-      behaviors: [
-        {
-          pathPattern: `/api/${functionFiles[i].name}`,
-          allowedMethods: CloudFrontAllowedMethods.ALL,
-          maxTtl: Duration.seconds(1),
-          defaultTtl: Duration.seconds(0),
-        },
-      ],
-    }));
+    /**
+     * Build a Cloudfront behavior for each api function that allows all HTTP Methods and has caching disabled.
+     */
+    const additionalBehaviors: Record<
+      string,
+      BehaviorOptions
+    > = restApis.reduce((previous, current, i) => {
+      const functionName = functionFiles[i].name;
+      const restApiOrigin = `${current.restApiId}.execute-api.${
+        Stack.of(this).region
+      }.amazonaws.com`;
+      const newAdditionalBehaviors = { ...previous };
+      newAdditionalBehaviors[`/api/${functionName}`] = {
+        origin: new HttpOrigin(restApiOrigin, { originPath: "/prod" }),
+        cachePolicy: CachePolicy.CACHING_DISABLED,
+        allowedMethods: AllowedMethods.ALLOW_ALL,
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      };
+      return newAdditionalBehaviors;
+    }, {} as Record<string, BehaviorOptions>);
 
-    const cloudFrontWebDistribution = new CloudFrontWebDistribution(
-      this,
-      "CloudfrontWebDistribution",
-      {
-        originConfigs: [
-          {
-            customOriginSource: {
-              domainName: websiteBucket.bucketWebsiteDomainName,
-              originProtocolPolicy: OriginProtocolPolicy.HTTP_ONLY,
-            },
-            behaviors: [{ isDefaultBehavior: true }],
-          },
-          ...originConfigs,
-        ],
-        aliasConfiguration: props.domain
-          ? {
-              acmCertRef: props.domain.certificate.certificateArn,
-              names: [
-                props.buildId
-                  ? `${props.buildId}.${props.domain.domainName}`
-                  : `www.${props.domain.domainName}`,
-              ],
-            }
-          : undefined,
-      }
-    );
+    /**
+     * Creating a Cloudfront distribution for the website bucket with an aggressive caching policy
+     */
+    const distribution = new Distribution(this, "Distribution", {
+      defaultBehavior: {
+        origin: new S3Origin(websiteBucket),
+        allowedMethods: AllowedMethods.ALLOW_ALL,
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        cachePolicy: CachePolicy.CACHING_OPTIMIZED,
+        compress: true,
+      },
+      defaultRootObject: "index.html",
+      additionalBehaviors,
+      certificate: props.domain?.certificate,
+      domainNames: props.domain
+        ? [
+            props.buildId
+              ? `${props.buildId}.${props.domain.domainName}`
+              : `www.${props.domain.domainName}`,
+          ]
+        : undefined,
+      enableLogging: true,
+    });
 
     new BucketDeployment(this, "BucketDeployment", {
       sources: props.uiSources,
       destinationBucket: websiteBucket!,
-      distribution: cloudFrontWebDistribution,
+      distribution: distribution,
       retainOnDelete: false,
     });
 
@@ -185,22 +181,18 @@ export class ServerlessUI extends Construct {
       new ARecord(this, "IPv4 AliasRecord", {
         zone: props.domain.hostedZone,
         recordName: props.buildId ?? "www",
-        target: RecordTarget.fromAlias(
-          new CloudFrontTarget(cloudFrontWebDistribution)
-        ),
+        target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
       });
 
       new AaaaRecord(this, "IPv6 AliasRecord", {
         zone: props.domain.hostedZone,
         recordName: props.buildId ?? "www",
-        target: RecordTarget.fromAlias(
-          new CloudFrontTarget(cloudFrontWebDistribution)
-        ),
+        target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
       });
     }
     if (!props.domain) {
       new CfnOutput(this, "Base Url", {
-        value: `https://${cloudFrontWebDistribution.distributionDomainName}`,
+        value: `https://${distribution.distributionDomainName}`,
       });
     } else {
       new CfnOutput(this, "Base Url", {
@@ -219,7 +211,7 @@ export class ServerlessUI extends Construct {
         });
       } else {
         new CfnOutput(this, `Function Path - ${apiEntry.name}`, {
-          value: `https://${cloudFrontWebDistribution.distributionDomainName}/api/${apiEntry.name}`,
+          value: `https://${distribution.distributionDomainName}/api/${apiEntry.name}`,
         });
       }
     });
@@ -227,6 +219,6 @@ export class ServerlessUI extends Construct {
     this.websiteBucket = websiteBucket;
     this.restApis = restApis;
     this.functions = lambdas;
-    this.distribution = cloudFrontWebDistribution;
+    this.distribution = distribution;
   }
 }

@@ -1,9 +1,9 @@
-name: Serverless UI Build & Deploy Example Site
+name: Serverless UI Build & Deploy Example Sites
 
 on: [pull_request]
 
 jobs:
-  deploy-pr-preview:
+  deploy-simple-preview:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,7 +22,8 @@ jobs:
           aws-region: us-west-2
       - run: lerna bootstrap
       - run: lerna run prepack
-      - run: yarn sui deploy --compiled-build --dir="./example-site/dist" --functions="./example-site/functions"
+      - run: cd examples/simple && yarn install
+      - run: yarn sui deploy --compiled-build --dir="./examples/simple/dist" --functions="./examples/simple/functions"
       - name: Add PR Comment
         uses: actions/github-script@v3
         with:
@@ -42,3 +43,24 @@ jobs:
               repo: context.repo.repo,
               body: `✅ Your deploy preview is ready: ${template.Outputs[baseUrlKey].Value}`,
             });
+  deploy-gatsby-preview:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14.x"
+      - run: npm install -g aws-cdk
+      - run: npm install -g lerna
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+      - run: lerna bootstrap
+      - run: lerna run prepack
+      - run: cd examples/gatsby && yarn install && yarn build
+      - run: yarn sui deploy --compiled-build --dir="./examples/gatsby/public"
