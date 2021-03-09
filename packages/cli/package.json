@@ -45,8 +45,9 @@
     "@serverlessui/domain-app": "^0.6.1",
     "@serverlessui/serverless-app": "^0.6.1",
     "cosmiconfig": "^7.0.0",
+    "esbuild": "^0.8.57",
     "glob": "^7.1.6",
-    "gluegun": "latest"
+    "gluegun": "^4.6.1"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.1.1",
