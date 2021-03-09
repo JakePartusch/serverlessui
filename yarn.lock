@@ -3187,6 +3187,11 @@ esbuild@^0.8.46:
   resolved "https://registry.npmjs.org/esbuild/-/esbuild-0.8.46.tgz"
   integrity sha512-xck9sXNCNmjDHCCfxTCyhKTiFuEBweh+IDAhMLOJI990v1Fzii6MyIkT1LbkvjgoVgPX2SK1kpi5eZVGNrl8yg==
 
+esbuild@^0.8.57:
+  version "0.8.57"
+  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.8.57.tgz#a42d02bc2b57c70bcd0ef897fe244766bb6dd926"
+  integrity sha512-j02SFrUwFTRUqiY0Kjplwjm1psuzO1d6AjaXKuOR9hrY0HuPsT6sV42B6myW34h1q4CRy+Y3g4RU/cGJeI/nNA==
+
 escape-string-regexp@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz"
@@ -3753,9 +3758,9 @@ globby@^9.2.0:
     pify "^4.0.1"
     slash "^2.0.0"
 
-gluegun@latest:
+gluegun@^4.6.1:
   version "4.6.1"
-  resolved "https://registry.npmjs.org/gluegun/-/gluegun-4.6.1.tgz"
+  resolved "https://registry.yarnpkg.com/gluegun/-/gluegun-4.6.1.tgz#f2a65d20378873de87a2143b8c3939ffc9a9e2b6"
   integrity sha512-Jd5hV1Uku2rjBg59mYA/bnwLwynK7u9A1zmK/LIb/p5d3pzjDCKRjWFuxZXyPwl9rsvKGhJUQxkFo2HEy8crKQ==
   dependencies:
     apisauce "^2.0.1"

@@ -10,7 +10,6 @@
   "license": "ISC",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.71",
-    "esbuild": "^0.8.56",
     "typescript": "^4.1.4"
   }
 }
