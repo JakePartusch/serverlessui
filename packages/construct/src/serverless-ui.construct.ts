@@ -20,6 +20,7 @@ import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
 import { BucketDeployment, ISource } from "@aws-cdk/aws-s3-deployment";
 import { CfnOutput, Construct, RemovalPolicy, Stack } from "@aws-cdk/core";
 import { Bucket, IBucket } from "@aws-cdk/aws-s3";
+import { PolicyStatement, Effect, AnyPrincipal } from "@aws-cdk/aws-iam";
 import * as path from "path";
 import { HttpOrigin, S3Origin } from "@aws-cdk/aws-cloudfront-origins";
 
@@ -94,9 +95,23 @@ export class ServerlessUI extends Construct {
     const websiteBucket = new Bucket(this, "WebsiteBucket", {
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
-      publicReadAccess: true,
-      websiteIndexDocument: "index.html",
     });
+
+    // Apply bucket policy to enforce encryption of data in transit
+    websiteBucket.addToResourcePolicy(
+      new PolicyStatement({
+        sid: "HttpsOnly",
+        resources: [`${websiteBucket.bucketArn}/*`],
+        actions: ["*"],
+        principals: [new AnyPrincipal()],
+        effect: Effect.DENY,
+        conditions: {
+          Bool: {
+            "aws:SecureTransport": "false",
+          },
+        },
+      })
+    );
 
     const functionFiles = props.apiEntries.map((apiEntry) => ({
       name: path.basename(apiEntry).split(".")[0],
