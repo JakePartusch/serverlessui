@@ -6,22 +6,22 @@ import {
   IHostedZone,
 } from "@aws-cdk/aws-route53";
 import { CloudFrontTarget } from "@aws-cdk/aws-route53-targets";
-import { IRestApi, LambdaRestApi } from "@aws-cdk/aws-apigateway";
 import {
   IDistribution,
   Distribution,
   ViewerProtocolPolicy,
-  BehaviorOptions,
   AllowedMethods,
   CachePolicy,
 } from "@aws-cdk/aws-cloudfront";
 import { IFunction, Runtime } from "@aws-cdk/aws-lambda";
 import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
 import { BucketDeployment, ISource } from "@aws-cdk/aws-s3-deployment";
-import { CfnOutput, Construct, RemovalPolicy, Stack } from "@aws-cdk/core";
+import { CfnOutput, Construct, RemovalPolicy } from "@aws-cdk/core";
 import { Bucket, IBucket } from "@aws-cdk/aws-s3";
 import * as path from "path";
 import { HttpOrigin, S3Origin } from "@aws-cdk/aws-cloudfront-origins";
+import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
+import { HttpApi, IHttpApi } from "@aws-cdk/aws-apigatewayv2";
 
 interface Domain {
   /**
@@ -76,9 +76,9 @@ export class ServerlessUI extends Construct {
    */
   readonly websiteBucket: IBucket;
   /**
-   * The API Gateway APIs for the function deployments
+   * The API Gateway API for the function deployments
    */
-  readonly restApis: IRestApi[];
+  readonly httpApi: IHttpApi;
   /**
    * The Node.js Lambda Functions deployed
    */
@@ -119,32 +119,31 @@ export class ServerlessUI extends Construct {
       });
     });
 
-    const restApis = lambdas.map((lambda, i) => {
-      return new LambdaRestApi(this, `LambdaRestApi-${functionFiles[i].name}`, {
+    const httpApi = new HttpApi(this, "HttpApi");
+
+    lambdas.forEach((lambda, i) => {
+      const lambdaFileName = functionFiles[i].name;
+      const lambdaProxyIntegration = new LambdaProxyIntegration({
         handler: lambda,
+      });
+
+      httpApi.addRoutes({
+        path: `/${lambdaFileName}`,
+        integration: lambdaProxyIntegration,
       });
     });
 
     /**
      * Build a Cloudfront behavior for each api function that allows all HTTP Methods and has caching disabled.
      */
-    const additionalBehaviors: Record<
-      string,
-      BehaviorOptions
-    > = restApis.reduce((previous, current, i) => {
-      const functionName = functionFiles[i].name;
-      const restApiOrigin = `${current.restApiId}.execute-api.${
-        Stack.of(this).region
-      }.amazonaws.com`;
-      const newAdditionalBehaviors = { ...previous };
-      newAdditionalBehaviors[`/api/${functionName}`] = {
-        origin: new HttpOrigin(restApiOrigin, { originPath: "/prod" }),
+    const additionalBehaviors = {
+      "/api/*": {
+        origin: new HttpOrigin(httpApi.apiEndpoint, { originPath: "/prod" }),
         cachePolicy: CachePolicy.CACHING_DISABLED,
         allowedMethods: AllowedMethods.ALLOW_ALL,
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-      };
-      return newAdditionalBehaviors;
-    }, {} as Record<string, BehaviorOptions>);
+      },
+    };
 
     /**
      * Creating a Cloudfront distribution for the website bucket with an aggressive caching policy
@@ -217,7 +216,7 @@ export class ServerlessUI extends Construct {
     });
 
     this.websiteBucket = websiteBucket;
-    this.restApis = restApis;
+    this.httpApi = httpApi;
     this.functions = lambdas;
     this.distribution = distribution;
   }

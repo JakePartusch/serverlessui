@@ -28,7 +28,8 @@
     "prepack": "yarn rimraf && yarn build"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "1.92.0",
+    "@aws-cdk/aws-apigatewayv2": "^1.92.0",
+    "@aws-cdk/aws-apigatewayv2-integrations": "^1.92.0",
     "@aws-cdk/aws-certificatemanager": "1.92.0",
     "@aws-cdk/aws-cloudfront": "1.92.0",
     "@aws-cdk/aws-cloudfront-origins": "1.92.0",
