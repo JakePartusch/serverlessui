@@ -42,7 +42,7 @@ You can get a new Serverless UI site deployed to you AWS account in just a few s
 
 1. **AWS Prerequisites**
 
-   In order to deploy to AWS, you'll have to configure your machine with local credentials. You'll find the best instructions [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
+   In order to deploy to AWS, you'll have to configure your machine with local credentials. You'll find the best instructions [here].(https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
 
 1. **Install the Serverless UI Command-Line Interface**
 
@@ -52,7 +52,7 @@ You can get a new Serverless UI site deployed to you AWS account in just a few s
 
 1. **Deploy your static website**
 
-   Finally, tell the Serverless UI where to find your website's static files
+   Finally, tell the Serverless UI where to find your website's static files.
 
    ```shell
    sui deploy --dir="./dist"
