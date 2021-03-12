@@ -50,14 +50,6 @@ You can get a new Serverless UI site deployed to you AWS account in just a few s
    npm install -g @serverlessui/cli
    ```
 
-1. **Bootstrap your AWS Environment**
-
-   Next, specify your account and region to bootstrap the CDK environment for quicker subsequent deployments
-
-   ```shell
-   npx cdk bootstrap aws://ACCOUNT-NUMBER-1/REGION-1
-   ```
-
 1. **Deploy your static website**
 
    Finally, tell the Serverless UI where to find your website's static files

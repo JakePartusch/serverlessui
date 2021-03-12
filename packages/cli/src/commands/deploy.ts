@@ -54,6 +54,16 @@ export const command: GluegunCommand = {
     }
 
     toolbox.print.highlight(
+      `npx cdk bootstrap ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}"`
+    )
+    child_process.execSync(
+      `npx cdk bootstrap ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}"`,
+      {
+        stdio: 'inherit'
+      }
+    )
+
+    toolbox.print.highlight(
       `npx cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}" --quiet`
     )
     child_process.execSync(
