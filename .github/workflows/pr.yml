@@ -22,7 +22,7 @@ jobs:
       - run: lerna bootstrap
       - run: lerna run prepack
       - run: cd examples/simple && yarn install
-      - run: yarn sui deploy --compiled-build --dir="./examples/simple/dist" --functions="./examples/simple/functions"
+      - run: yarn sui deploy --compiled-build --dir="examples/simple/dist" --functions="examples/simple/functions"
       - name: Add PR Comment
         uses: actions/github-script@v3
         with:
@@ -60,4 +60,4 @@ jobs:
       - run: lerna bootstrap
       - run: lerna run prepack
       - run: cd examples/gatsby && yarn install && yarn build
-      - run: yarn sui deploy --compiled-build --dir="./examples/gatsby/public"
+      - run: yarn sui deploy --compiled-build --dir="examples/gatsby/public"

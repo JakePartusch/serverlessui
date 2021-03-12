@@ -55,7 +55,7 @@ You can get a new Serverless UI site deployed to you AWS account in just a few s
    Finally, tell the Serverless UI where to find your website's static files.
 
    ```shell
-   sui deploy --dir="./dist"
+   sui deploy --dir="dist"
    ```
 
 ## 📖 CLI Reference
@@ -71,20 +71,20 @@ sui deploy
 
 #### Options
 
-|    Option     | Description                                           |     Default     |
-| :-----------: | ----------------------------------------------------- | :-------------: |
-|    `--dir`    | The directory of your website's static files          |   `"./dist"`    |
-| `--functions` | The directory of the functions to deploy as endpoints | `"./functions"` |
-|   `--prod`    | Custom Domains only: `false` will deploy a preview    |     `false`     |
+|    Option     | Description                                           |    Default    |
+| :-----------: | ----------------------------------------------------- | :-----------: |
+|    `--dir`    | The directory of your website's static files          |   `"dist"`    |
+| `--functions` | The directory of the functions to deploy as endpoints | `"functions"` |
+|   `--prod`    | Custom Domains only: `false` will deploy a preview    |    `false`    |
 
 > Note: The `--dir` directory should be only static files. You may need to run a build step prior to deploying
 
 #### Examples
 
-- Deploy a preview of static website in a `./build` directory with no functions
+- Deploy a preview of static website in a `build` directory with no functions
 
 ```shell
-sui deploy --dir="./build"
+sui deploy --dir="build"
 ...
 ❯ Website Url: https://xxxxx.cloudfront.net
 ```
@@ -92,7 +92,7 @@ sui deploy --dir="./build"
 - Deploy a preview of static website with serverless functions
 
 ```shell
-sui deploy --dir="./build" --functions="./lambdas"
+sui deploy --dir="build" --functions="lambdas"
 ...
 ❯ Website Url: https://xxxxx.cloudfront.net
 ❯ API Url: https://xxxxx.cloudfront.net/api/my-function-name
@@ -103,7 +103,7 @@ sui deploy --dir="./build" --functions="./lambdas"
   > Note: A custom domain must be configured for production deploys. See [configure-domain](#configure-domain)
 
 ```shell
-sui deploy --prod --dir="./build" --functions="./lambdas"
+sui deploy --prod --dir="build" --functions="lambdas"
 ...
 ❯ Website Url: https://www.my-domain.com
 ❯ API Url: https://www.my-domain.com/api/my-function-name
@@ -203,15 +203,14 @@ jobs:
           node-version: "12.x"
       - run: npm ci
       - run: npm run build
-      - run: npm install -g @serverlessui/cli
-      - run: npm install -g aws-cdk
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - run: sui deploy --dir=./build
+          aws-region: us-west-2
+      - run: npm install -g @serverlessui/cli
+      - run: sui deploy --dir="build"
       - name: Add PR Comment
         uses: actions/github-script@v3
         with:
