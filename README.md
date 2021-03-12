@@ -44,12 +44,6 @@ You can get a new Serverless UI site deployed to you AWS account in just a few s
 
    In order to deploy to AWS, you'll have to configure your machine with local credentials. You'll find the best instructions [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
 
-1. **Install the AWS CDK.**
-
-   ```shell
-   npm install -g aws-cdk
-   ```
-
 1. **Install the Serverless UI Command-Line Interface**
 
    ```shell
@@ -61,7 +55,7 @@ You can get a new Serverless UI site deployed to you AWS account in just a few s
    Next, specify your account and region to bootstrap the CDK environment for quicker subsequent deployments
 
    ```shell
-   cdk bootstrap aws://ACCOUNT-NUMBER-1/REGION-1
+   npx cdk bootstrap aws://ACCOUNT-NUMBER-1/REGION-1
    ```
 
 1. **Deploy your static website**
@@ -231,19 +225,18 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const manifest = require(`${process.env.GITHUB_WORKSPACE}/cdk.out/manifest.json`);
-            const stackName = Object.keys(manifest.artifacts).find((key) =>
+            const outputs = require(`${process.env.GITHUB_WORKSPACE}/cdk.out/outputs.json`);
+            const stackName = Object.keys(outputs).find((key) =>
               key.startsWith("ServerlessUI")
             );
-            const template = require(`${process.env.GITHUB_WORKSPACE}/cdk.out/${stackName}.template.json`);
-            const baseUrlKey = Object.keys(template.Outputs).find((key) =>
+            const baseUrlKey = Object.keys(outputs[stackName]).find((key) =>
               key.startsWith("ServerlessUIBaseUrl")
             );
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `✅ Your deploy preview is ready: ${template.Outputs[baseUrlKey].Value}`,
+              body: `✅ Your deploy preview is ready: ${outputs[stackName][baseUrlKey]}`,
             });
 ```
 
