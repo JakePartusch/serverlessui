@@ -48,7 +48,10 @@
     "cosmiconfig": "^7.0.0",
     "esbuild": "^0.8.57",
     "glob": "^7.1.6",
-    "gluegun": "^4.6.1"
+    "gluegun": "^4.6.1",
+    "next": "^10.0.0",
+    "react": "17.0.1",
+    "react-dom": "17.0.1"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.1.1",

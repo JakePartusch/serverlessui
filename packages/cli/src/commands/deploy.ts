@@ -23,11 +23,18 @@ export const command: GluegunCommand = {
     const apiFiles = files.join(',')
     const prodCli = prod ? '-c prod=true' : ''
 
-    const isNextAppCli = dir.includes('.next') ? '-c isNextApp=true' : ''
+    const isNextAppCli = configResult?.config?.__experimental_nextjs
+      ? '-c isNextApp=true'
+      : ''
 
     if (isNextAppCli) {
-      toolbox.print.info('Building Next.js app')
-      const builder = new Builder('.', './build', { args: ['build'] })
+      toolbox.print.info('Building Next.js app...')
+
+      const builder = new Builder(dir, './build', {
+        args: ['build'],
+        baseDir: dir,
+        cwd: dir
+      })
       await builder.build()
     }
 

@@ -5,7 +5,6 @@ on: [pull_request]
 jobs:
   deploy-simple-preview:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js
@@ -41,9 +40,9 @@ jobs:
               repo: context.repo.repo,
               body: `✅ Your deploy preview is ready: ${outputs[stackName][baseUrlKey]}`,
             });
+
   deploy-gatsby-preview:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js
@@ -61,3 +60,23 @@ jobs:
       - run: lerna run prepack
       - run: cd examples/gatsby && yarn install && yarn build
       - run: yarn sui deploy --compiled-build --dir="examples/gatsby/public"
+
+  deploy-nextjs-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14.x"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+      - run: npm install -g lerna
+      - run: lerna bootstrap
+      - run: lerna run prepack
+      - run: cd examples/nextjs && yarn install && yarn build
+      - run: yarn sui deploy --compiled-build --dir="examples/nextjs"

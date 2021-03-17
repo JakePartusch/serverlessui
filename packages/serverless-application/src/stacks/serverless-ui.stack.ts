@@ -39,9 +39,13 @@ export class ServerlessUIStack extends Stack {
           }
         : undefined;
     if (props.isNextApp) {
+      //@ts-ignore
       new NextJSLambdaEdge(this, "ServerlessUINext", {
         serverlessBuildOutDir: "./build",
-        domain,
+        domain: {
+          ...domain,
+          domainName: `${props.buildId}.${props.domainName}`,
+        },
         name: {
           apiLambda: `ServerlessUINext-Api-${props.buildId}`,
           defaultLambda: `ServerlessUINext-Default-${props.buildId}`,
