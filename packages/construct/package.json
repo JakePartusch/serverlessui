@@ -28,17 +28,17 @@
     "prepack": "yarn rimraf && yarn build"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigatewayv2": "1.93.0",
-    "@aws-cdk/aws-apigatewayv2-integrations": "1.93.0",
-    "@aws-cdk/aws-certificatemanager": "1.93.0",
-    "@aws-cdk/aws-cloudfront": "1.93.0",
-    "@aws-cdk/aws-cloudfront-origins": "1.93.0",
-    "@aws-cdk/aws-lambda-nodejs": "1.93.0",
-    "@aws-cdk/aws-route53": "1.93.0",
-    "@aws-cdk/aws-route53-targets": "1.93.0",
-    "@aws-cdk/aws-s3": "1.93.0",
-    "@aws-cdk/aws-s3-deployment": "1.93.0",
-    "@aws-cdk/core": "1.93.0"
+    "@aws-cdk/aws-apigatewayv2": "1.94.0",
+    "@aws-cdk/aws-apigatewayv2-integrations": "1.94.0",
+    "@aws-cdk/aws-certificatemanager": "1.94.0",
+    "@aws-cdk/aws-cloudfront": "1.94.0",
+    "@aws-cdk/aws-cloudfront-origins": "1.94.0",
+    "@aws-cdk/aws-lambda-nodejs": "1.94.0",
+    "@aws-cdk/aws-route53": "1.94.0",
+    "@aws-cdk/aws-route53-targets": "1.94.0",
+    "@aws-cdk/aws-s3": "1.94.0",
+    "@aws-cdk/aws-s3-deployment": "1.94.0",
+    "@aws-cdk/core": "1.94.0"
   },
   "files": [
     "tsconfig.json",
