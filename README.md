@@ -42,13 +42,7 @@ You can get a new Serverless UI site deployed to you AWS account in just a few s
 
 1. **AWS Prerequisites**
 
-   In order to deploy to AWS, you'll have to configure your machine with local credentials. You'll find the best instructions [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
-
-1. **Install the AWS CDK.**
-
-   ```shell
-   npm install -g aws-cdk
-   ```
+   In order to deploy to AWS, you'll have to configure your machine with local credentials. You'll find the best instructions [here].(https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
 
 1. **Install the Serverless UI Command-Line Interface**
 
@@ -56,20 +50,12 @@ You can get a new Serverless UI site deployed to you AWS account in just a few s
    npm install -g @serverlessui/cli
    ```
 
-1. **Bootstrap your AWS Environment**
-
-   Next, specify your account and region to bootstrap the CDK environment for quicker subsequent deployments
-
-   ```shell
-   cdk bootstrap aws://ACCOUNT-NUMBER-1/REGION-1
-   ```
-
 1. **Deploy your static website**
 
-   Finally, tell the Serverless UI where to find your website's static files
+   Finally, tell the Serverless UI where to find your website's static files.
 
    ```shell
-   sui deploy --dir="./dist"
+   sui deploy --dir="dist"
    ```
 
 ## 📖 CLI Reference
@@ -85,20 +71,20 @@ sui deploy
 
 #### Options
 
-|    Option     | Description                                           |     Default     |
-| :-----------: | ----------------------------------------------------- | :-------------: |
-|    `--dir`    | The directory of your website's static files          |   `"./dist"`    |
-| `--functions` | The directory of the functions to deploy as endpoints | `"./functions"` |
-|   `--prod`    | Custom Domains only: `false` will deploy a preview    |     `false`     |
+|    Option     | Description                                           |    Default    |
+| :-----------: | ----------------------------------------------------- | :-----------: |
+|    `--dir`    | The directory of your website's static files          |   `"dist"`    |
+| `--functions` | The directory of the functions to deploy as endpoints | `"functions"` |
+|   `--prod`    | Custom Domains only: `false` will deploy a preview    |    `false`    |
 
 > Note: The `--dir` directory should be only static files. You may need to run a build step prior to deploying
 
 #### Examples
 
-- Deploy a preview of static website in a `./build` directory with no functions
+- Deploy a preview of static website in a `build` directory with no functions
 
 ```shell
-sui deploy --dir="./build"
+sui deploy --dir="build"
 ...
 ❯ Website Url: https://xxxxx.cloudfront.net
 ```
@@ -106,7 +92,7 @@ sui deploy --dir="./build"
 - Deploy a preview of static website with serverless functions
 
 ```shell
-sui deploy --dir="./build" --functions="./lambdas"
+sui deploy --dir="build" --functions="lambdas"
 ...
 ❯ Website Url: https://xxxxx.cloudfront.net
 ❯ API Url: https://xxxxx.cloudfront.net/api/my-function-name
@@ -117,7 +103,7 @@ sui deploy --dir="./build" --functions="./lambdas"
   > Note: A custom domain must be configured for production deploys. See [configure-domain](#configure-domain)
 
 ```shell
-sui deploy --prod --dir="./build" --functions="./lambdas"
+sui deploy --prod --dir="build" --functions="lambdas"
 ...
 ❯ Website Url: https://www.my-domain.com
 ❯ API Url: https://www.my-domain.com/api/my-function-name
@@ -137,6 +123,14 @@ sui configure-domain [--domain]
 |   Option   | Description        | Default |
 | :--------: | ------------------ | :-----: |
 | `--domain` | Your custom domain |  None   |
+
+#### Examples
+
+Deploy a Hosted Zone and Certificate to us-east-1 (required region for Cloudfront)
+
+```shell
+sui configure-domain --domain="serverlessui.app"
+```
 
 #### Additional Steps
 
@@ -171,7 +165,7 @@ A minute or two after running this command, the deploy will "hang" while trying 
 
     Place the config file in the root of your project
 
-    > serverless.config.js
+    > serverlessui.config.js
 
     ```js
     module.exports = {
@@ -209,33 +203,31 @@ jobs:
           node-version: "12.x"
       - run: npm ci
       - run: npm run build
-      - run: npm install -g @serverlessui/cli
-      - run: npm install -g aws-cdk
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - run: sui deploy --dir=./build
+          aws-region: us-west-2
+      - run: npm install -g @serverlessui/cli
+      - run: sui deploy --dir="build"
       - name: Add PR Comment
         uses: actions/github-script@v3
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const manifest = require(`${process.env.GITHUB_WORKSPACE}/cdk.out/manifest.json`);
-            const stackName = Object.keys(manifest.artifacts).find((key) =>
+            const outputs = require(`${process.env.GITHUB_WORKSPACE}/cdk.out/outputs.json`);
+            const stackName = Object.keys(outputs).find((key) =>
               key.startsWith("ServerlessUI")
             );
-            const template = require(`${process.env.GITHUB_WORKSPACE}/cdk.out/${stackName}.template.json`);
-            const baseUrlKey = Object.keys(template.Outputs).find((key) =>
+            const baseUrlKey = Object.keys(outputs[stackName]).find((key) =>
               key.startsWith("ServerlessUIBaseUrl")
             );
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `✅ Your deploy preview is ready: ${template.Outputs[baseUrlKey].Value}`,
+              body: `✅ Your deploy preview is ready: ${outputs[stackName][baseUrlKey]}`,
             });
 ```
 

@@ -1,6 +1,6 @@
 {
   "name": "@serverlessui/construct",
-  "version": "0.6.0",
+  "version": "0.8.0",
   "description": "CDK constructs to support Serverless UI",
   "license": "MIT",
   "homepage": "https://github.com/JakePartusch/serverlessui/tree/main#README.md",
@@ -28,15 +28,17 @@
     "prepack": "yarn rimraf && yarn build"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "1.91.0",
-    "@aws-cdk/aws-certificatemanager": "1.91.0",
-    "@aws-cdk/aws-cloudfront": "1.91.0",
-    "@aws-cdk/aws-lambda-nodejs": "1.91.0",
-    "@aws-cdk/aws-route53": "1.91.0",
-    "@aws-cdk/aws-route53-targets": "1.91.0",
-    "@aws-cdk/aws-s3": "1.91.0",
-    "@aws-cdk/aws-s3-deployment": "1.91.0",
-    "@aws-cdk/core": "1.91.0"
+    "@aws-cdk/aws-apigatewayv2": "1.93.0",
+    "@aws-cdk/aws-apigatewayv2-integrations": "1.93.0",
+    "@aws-cdk/aws-certificatemanager": "1.93.0",
+    "@aws-cdk/aws-cloudfront": "1.93.0",
+    "@aws-cdk/aws-cloudfront-origins": "1.93.0",
+    "@aws-cdk/aws-lambda-nodejs": "1.93.0",
+    "@aws-cdk/aws-route53": "1.93.0",
+    "@aws-cdk/aws-route53-targets": "1.93.0",
+    "@aws-cdk/aws-s3": "1.93.0",
+    "@aws-cdk/aws-s3-deployment": "1.93.0",
+    "@aws-cdk/core": "1.93.0"
   },
   "files": [
     "tsconfig.json",

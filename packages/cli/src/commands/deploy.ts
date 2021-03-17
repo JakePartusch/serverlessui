@@ -60,21 +60,31 @@ export const command: GluegunCommand = {
     }
 
     toolbox.print.highlight(
-      `cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" ${isNextAppCli} -a "node ${serverlessApplicationPath}" --quiet`
+      `npx cdk bootstrap ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}"`
     )
     child_process.execSync(
-      `cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" ${isNextAppCli} -a "node ${serverlessApplicationPath}" --quiet`,
+      `npx cdk bootstrap ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}"`,
       {
         stdio: 'inherit'
       }
     )
 
     toolbox.print.highlight(
-      `cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} ${isNextAppCli} -a "node ${serverlessApplicationPath}" --require-approval never`
+      `npx cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" ${isNextAppCli} -a "node ${serverlessApplicationPath}" --quiet`
+    )
+    child_process.execSync(
+      `npx cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" ${isNextAppCli} -a "node ${serverlessApplicationPath}" --quiet`,
+      {
+        stdio: 'inherit'
+      }
+    )
+
+    toolbox.print.highlight(
+      `npx cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} ${isNextAppCli} -a "node ${serverlessApplicationPath}" --require-approval never --outputs-file cdk.out/outputs.json`
     )
 
     child_process.execSync(
-      `cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} ${isNextAppCli} -a "node ${serverlessApplicationPath}" --require-approval never`,
+      `npx cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} ${isNextAppCli} -a "node ${serverlessApplicationPath}" --require-approval never --outputs-file cdk.out/outputs.json`,
       {
         stdio: 'inherit'
       }

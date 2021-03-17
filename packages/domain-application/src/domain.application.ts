@@ -5,8 +5,16 @@ const app = new cdk.App();
 
 const domainName = app.node.tryGetContext("domainName");
 
-new DomainStack(app, "ServelessUIDomain", {
+const domainNameStackName = `ServerlessUIDomain-${domainName
+  .split(".")
+  .join("dot")}`;
+
+new DomainStack(app, domainNameStackName, {
   domainName,
+  //Force the certificate to be created in us-east-1: https://github.com/JakePartusch/serverlessui/issues/20
+  env: {
+    region: "us-east-1",
+  },
 });
 
 export const DomainApplication = app;

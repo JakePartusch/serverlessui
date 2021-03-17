@@ -28,20 +28,20 @@ sui deploy
 
 #### Options
 
-|    Option     | Description                                           |     Default     |
-| :-----------: | ----------------------------------------------------- | :-------------: |
-|    `--dir`    | The directory of your website's static files          |   `"./dist"`    |
-| `--functions` | The directory of the functions to deploy as endpoints | `"./functions"` |
-|   `--prod`    | Custom Domains only: `false` will deploy a preview    |     `false`     |
+|    Option     | Description                                           |    Default    |
+| :-----------: | ----------------------------------------------------- | :-----------: |
+|    `--dir`    | The directory of your website's static files          |   `"dist"`    |
+| `--functions` | The directory of the functions to deploy as endpoints | `"functions"` |
+|   `--prod`    | Custom Domains only: `false` will deploy a preview    |    `false`    |
 
 > Note: The `--dir` directory should be only static files. You may need to run a build step prior to deploying
 
 #### Examples
 
-- Deploy a preview of static website in a `./build` directory with no functions
+- Deploy a preview of static website in a `build` directory with no functions
 
 ```shell
-sui deploy --dir="./build"
+sui deploy --dir="build"
 ...
 ❯ Website Url: https://xxxxx.cloudfront.net
 ```
@@ -49,7 +49,7 @@ sui deploy --dir="./build"
 - Deploy a preview of static website with serverless functions
 
 ```shell
-sui deploy --dir="./build" --functions="./lambdas"
+sui deploy --dir="build" --functions="lambdas"
 ...
 ❯ Website Url: https://xxxxx.cloudfront.net
 ❯ API Url: https://xxxxx.cloudfront.net/api/my-function-name
@@ -60,7 +60,7 @@ sui deploy --dir="./build" --functions="./lambdas"
   > Note: A custom domain must be configured for production deploys. See [configure-domain](#configure-domain)
 
 ```shell
-sui deploy --prod --dir="./build" --functions="./lambdas"
+sui deploy --prod --dir="build" --functions="lambdas"
 ...
 ❯ Website Url: https://www.my-domain.com
 ❯ API Url: https://www.my-domain.com/api/my-function-name
@@ -114,7 +114,7 @@ A minute or two after running this command, the deploy will "hang" while trying 
 
     Place the config file in the root of your project
 
-    > serverless.config.js
+    > serverlessui.config.js
 
     ```js
     module.exports = {

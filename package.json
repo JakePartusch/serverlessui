@@ -7,7 +7,6 @@
   ],
   "scripts": {},
   "devDependencies": {
-    "esbuild": "^0.8.46",
     "lerna": "^3.22.1"
   }
 }

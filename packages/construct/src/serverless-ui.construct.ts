@@ -6,26 +6,22 @@ import {
   IHostedZone,
 } from "@aws-cdk/aws-route53";
 import { CloudFrontTarget } from "@aws-cdk/aws-route53-targets";
-import { IRestApi, LambdaRestApi } from "@aws-cdk/aws-apigateway";
 import {
-  CloudFrontWebDistribution,
-  CloudFrontAllowedMethods,
-  SourceConfiguration,
-  OriginProtocolPolicy,
   IDistribution,
+  Distribution,
+  ViewerProtocolPolicy,
+  AllowedMethods,
+  CachePolicy,
 } from "@aws-cdk/aws-cloudfront";
 import { IFunction, Runtime } from "@aws-cdk/aws-lambda";
 import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
 import { BucketDeployment, ISource } from "@aws-cdk/aws-s3-deployment";
-import {
-  CfnOutput,
-  Construct,
-  Duration,
-  RemovalPolicy,
-  Stack,
-} from "@aws-cdk/core";
+import { CfnOutput, Construct, RemovalPolicy, Stack } from "@aws-cdk/core";
 import { Bucket, IBucket } from "@aws-cdk/aws-s3";
 import * as path from "path";
+import { HttpOrigin, S3Origin } from "@aws-cdk/aws-cloudfront-origins";
+import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
+import { HttpApi, IHttpApi } from "@aws-cdk/aws-apigatewayv2";
 
 interface Domain {
   /**
@@ -80,9 +76,9 @@ export class ServerlessUI extends Construct {
    */
   readonly websiteBucket: IBucket;
   /**
-   * The API Gateway APIs for the function deployments
+   * The API Gateway API for the function deployments
    */
-  readonly restApis: IRestApi[];
+  readonly httpApi: IHttpApi;
   /**
    * The Node.js Lambda Functions deployed
    */
@@ -100,7 +96,6 @@ export class ServerlessUI extends Construct {
       autoDeleteObjects: true,
       publicReadAccess: true,
       websiteIndexDocument: "index.html",
-      websiteErrorDocument: "error.html",
     });
 
     const functionFiles = props.apiEntries.map((apiEntry) => ({
@@ -124,60 +119,62 @@ export class ServerlessUI extends Construct {
       });
     });
 
-    const restApis = lambdas.map((lambda, i) => {
-      return new LambdaRestApi(this, `LambdaRestApi-${functionFiles[i].name}`, {
+    const httpApi = new HttpApi(this, "HttpApi");
+
+    lambdas.forEach((lambda, i) => {
+      const lambdaFileName = functionFiles[i].name;
+      const lambdaProxyIntegration = new LambdaProxyIntegration({
         handler: lambda,
+      });
+
+      httpApi.addRoutes({
+        path: `/api/${lambdaFileName}`,
+        integration: lambdaProxyIntegration,
       });
     });
 
-    const originConfigs: SourceConfiguration[] = restApis.map((restApi, i) => ({
-      customOriginSource: {
-        domainName: `${restApi.restApiId}.execute-api.${
-          Stack.of(this).region
-        }.amazonaws.com`,
-        originPath: "/prod",
+    /**
+     * Build a Cloudfront behavior for each api function that allows all HTTP Methods and has caching disabled.
+     */
+    const additionalBehaviors = {
+      "/api/*": {
+        origin: new HttpOrigin(
+          `${httpApi.apiId}.execute-api.${Stack.of(this).region}.amazonaws.com`
+        ),
+        cachePolicy: CachePolicy.CACHING_DISABLED,
+        allowedMethods: AllowedMethods.ALLOW_ALL,
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
-      behaviors: [
-        {
-          pathPattern: `/api/${functionFiles[i].name}`,
-          allowedMethods: CloudFrontAllowedMethods.ALL,
-          maxTtl: Duration.seconds(1),
-          defaultTtl: Duration.seconds(0),
-        },
-      ],
-    }));
+    };
 
-    const cloudFrontWebDistribution = new CloudFrontWebDistribution(
-      this,
-      "CloudfrontWebDistribution",
-      {
-        originConfigs: [
-          {
-            customOriginSource: {
-              domainName: websiteBucket.bucketWebsiteDomainName,
-              originProtocolPolicy: OriginProtocolPolicy.HTTP_ONLY,
-            },
-            behaviors: [{ isDefaultBehavior: true }],
-          },
-          ...originConfigs,
-        ],
-        aliasConfiguration: props.domain
-          ? {
-              acmCertRef: props.domain.certificate.certificateArn,
-              names: [
-                props.buildId
-                  ? `${props.buildId}.${props.domain.domainName}`
-                  : `www.${props.domain.domainName}`,
-              ],
-            }
-          : undefined,
-      }
-    );
+    /**
+     * Creating a Cloudfront distribution for the website bucket with an aggressive caching policy
+     */
+    const distribution = new Distribution(this, "Distribution", {
+      defaultBehavior: {
+        origin: new S3Origin(websiteBucket),
+        allowedMethods: AllowedMethods.ALLOW_ALL,
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        cachePolicy: CachePolicy.CACHING_OPTIMIZED,
+        compress: true,
+      },
+      defaultRootObject: "index.html",
+      additionalBehaviors,
+      certificate: props.domain?.certificate,
+      domainNames: props.domain
+        ? [
+            props.buildId
+              ? `${props.buildId}.${props.domain.domainName}`
+              : `www.${props.domain.domainName}`,
+          ]
+        : undefined,
+      enableLogging: true,
+    });
 
     new BucketDeployment(this, "BucketDeployment", {
       sources: props.uiSources,
       destinationBucket: websiteBucket!,
-      distribution: cloudFrontWebDistribution,
+      distribution: distribution,
       retainOnDelete: false,
     });
 
@@ -185,22 +182,18 @@ export class ServerlessUI extends Construct {
       new ARecord(this, "IPv4 AliasRecord", {
         zone: props.domain.hostedZone,
         recordName: props.buildId ?? "www",
-        target: RecordTarget.fromAlias(
-          new CloudFrontTarget(cloudFrontWebDistribution)
-        ),
+        target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
       });
 
       new AaaaRecord(this, "IPv6 AliasRecord", {
         zone: props.domain.hostedZone,
         recordName: props.buildId ?? "www",
-        target: RecordTarget.fromAlias(
-          new CloudFrontTarget(cloudFrontWebDistribution)
-        ),
+        target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
       });
     }
     if (!props.domain) {
       new CfnOutput(this, "Base Url", {
-        value: `https://${cloudFrontWebDistribution.distributionDomainName}`,
+        value: `https://${distribution.distributionDomainName}`,
       });
     } else {
       new CfnOutput(this, "Base Url", {
@@ -219,14 +212,14 @@ export class ServerlessUI extends Construct {
         });
       } else {
         new CfnOutput(this, `Function Path - ${apiEntry.name}`, {
-          value: `https://${cloudFrontWebDistribution.distributionDomainName}/api/${apiEntry.name}`,
+          value: `https://${distribution.distributionDomainName}/api/${apiEntry.name}`,
         });
       }
     });
 
     this.websiteBucket = websiteBucket;
-    this.restApis = restApis;
+    this.httpApi = httpApi;
     this.functions = lambdas;
-    this.distribution = cloudFrontWebDistribution;
+    this.distribution = distribution;
   }
 }
