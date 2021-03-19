@@ -44,7 +44,7 @@
   "dependencies": {
     "@serverlessui/domain-app": "^0.8.0",
     "@serverlessui/serverless-app": "^0.8.0",
-    "aws-cdk": "1.93.0",
+    "aws-cdk": "1.94.1",
     "cosmiconfig": "^7.0.0",
     "esbuild": "^0.8.57",
     "glob": "^7.1.6",
