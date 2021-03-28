@@ -18,7 +18,7 @@ export const command: GluegunCommand = {
     const { functions = './functions', dir = './dist', prod = false } = options
     const files = glob.sync(`${functions}/**/*.{js,ts}`)
     const explorerSync = cosmiconfigSync('serverlessui')
-    const configResult = explorerSync.search()
+    const configResult = explorerSync.search(dir)
 
     const apiFiles = files.join(',')
     const prodCli = prod ? '-c prod=true' : ''
