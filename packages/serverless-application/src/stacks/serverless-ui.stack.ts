@@ -1,9 +1,9 @@
-import { App, Stack, StackProps } from "@aws-cdk/core";
+import { App, CfnOutput, Stack, StackProps } from "@aws-cdk/core";
 import { Certificate } from "@aws-cdk/aws-certificatemanager";
 import { HostedZone } from "@aws-cdk/aws-route53";
 import { Source } from "@aws-cdk/aws-s3-deployment";
 import { ServerlessUI } from "@serverlessui/construct";
-import { NextJSLambdaEdge } from "@sls-next/cdk-construct";
+import { NextJSLambdaEdge, Props } from "@sls-next/cdk-construct";
 
 interface ServerlessUIStackProps extends StackProps {
   buildId?: string;
@@ -39,19 +39,35 @@ export class ServerlessUIStack extends Stack {
           }
         : undefined;
     if (props.isNextApp) {
-      //@ts-ignore
-      new NextJSLambdaEdge(this, "ServerlessUINext", {
+      const nextJSLambdaEdgeProps: Props = {
         serverlessBuildOutDir: "./build",
-        domain: {
-          ...domain,
-          domainName: `${props.buildId}.${props.domainName}`,
-        },
         name: {
           apiLambda: `ServerlessUINext-Api-${props.buildId}`,
           defaultLambda: `ServerlessUINext-Default-${props.buildId}`,
           imageLambda: `ServerlessUINext-Image-${props.buildId}`,
         },
-      });
+      };
+      if (domain && domain.hostedZone && domain.certificate) {
+        nextJSLambdaEdgeProps.domain = {
+          ...domain,
+          domainName: `${props.buildId}.${props.domainName}`,
+        };
+      }
+      const { distribution, aRecord } = new NextJSLambdaEdge(
+        this,
+        "ServerlessUINext",
+        nextJSLambdaEdgeProps
+      );
+
+      if (aRecord) {
+        new CfnOutput(this, "Base Url", {
+          value: aRecord.domainName,
+        });
+      } else {
+        new CfnOutput(this, "Base Url", {
+          value: `https://${distribution.distributionDomainName}`,
+        });
+      }
     } else {
       new ServerlessUI(this, "ServerlessUI", {
         ...props,

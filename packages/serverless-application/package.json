@@ -33,7 +33,7 @@
     "@aws-cdk/aws-s3-deployment": "1.93.0",
     "@aws-cdk/core": "1.93.0",
     "@serverlessui/construct": "^0.8.0",
-    "@sls-next/cdk-construct": "^1.19.0-alpha.32",
+    "@sls-next/cdk-construct": "^1.19.0-alpha.34",
     "nanoid": "^3.1.20"
   },
   "devDependencies": {
