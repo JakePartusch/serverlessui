@@ -10,6 +10,7 @@ const uiEntry = app.node.tryGetContext("uiEntry");
 const prod = app.node.tryGetContext("prod");
 const zoneId = app.node.tryGetContext("zoneId");
 const certificateArn = app.node.tryGetContext("certificateArn");
+const isNextApp = app.node.tryGetContext("isNextApp");
 
 const nanoid = customAlphabet("0123456789abcdef", 8);
 const id = nanoid();
@@ -25,6 +26,7 @@ new ServerlessUIStack(app, stackName, {
   certificateArn,
   apiEntries: apiEntries.split(",").filter((entry: string) => entry),
   uiEntry,
+  isNextApp,
 });
 
 export const ServerlessUIApplication = app;

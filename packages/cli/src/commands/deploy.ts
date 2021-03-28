@@ -5,6 +5,7 @@ import { cosmiconfigSync } from 'cosmiconfig'
 const serverlessApplicationPath = require.resolve(
   '@serverlessui/serverless-app'
 )
+import { Builder } from '@sls-next/lambda-at-edge'
 
 export const command: GluegunCommand = {
   name: 'deploy',
@@ -12,18 +13,30 @@ export const command: GluegunCommand = {
   description: 'Deploy your website and serverless functions',
   run: async toolbox => {
     const { parameters } = toolbox
-
     const { options } = parameters
 
     const { functions = './functions', dir = './dist', prod = false } = options
-
     const files = glob.sync(`${functions}/**/*.{js,ts}`)
-
     const explorerSync = cosmiconfigSync('serverlessui')
-    const configResult = explorerSync.search()
+    const configResult = explorerSync.search(dir)
 
     const apiFiles = files.join(',')
     const prodCli = prod ? '-c prod=true' : ''
+
+    const isNextAppCli = configResult?.config?.__experimental_nextjs
+      ? '-c isNextApp=true'
+      : ''
+
+    if (isNextAppCli) {
+      toolbox.print.info('Building Next.js app...')
+
+      const builder = new Builder(dir, './build', {
+        args: ['build'],
+        baseDir: dir,
+        cwd: dir
+      })
+      await builder.build()
+    }
 
     if (apiFiles.length === 0) {
       toolbox.print.info(`No functions found in directory ${functions}`)
@@ -64,21 +77,21 @@ export const command: GluegunCommand = {
     )
 
     toolbox.print.highlight(
-      `npx cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}" --quiet`
+      `npx cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" ${isNextAppCli} -a "node ${serverlessApplicationPath}" --quiet`
     )
     child_process.execSync(
-      `npx cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}" --quiet`,
+      `npx cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" ${isNextAppCli} -a "node ${serverlessApplicationPath}" --quiet`,
       {
         stdio: 'inherit'
       }
     )
 
     toolbox.print.highlight(
-      `npx cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --require-approval never --outputs-file cdk.out/outputs.json`
+      `npx cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} ${isNextAppCli} -a "node ${serverlessApplicationPath}" --require-approval never --outputs-file cdk.out/outputs.json`
     )
 
     child_process.execSync(
-      `npx cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --require-approval never --outputs-file cdk.out/outputs.json`,
+      `npx cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} ${isNextAppCli} -a "node ${serverlessApplicationPath}" --require-approval never --outputs-file cdk.out/outputs.json`,
       {
         stdio: 'inherit'
       }
