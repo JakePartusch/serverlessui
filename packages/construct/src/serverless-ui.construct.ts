@@ -12,6 +12,7 @@ import {
   ViewerProtocolPolicy,
   AllowedMethods,
   CachePolicy,
+  DistributionProps,
 } from "@aws-cdk/aws-cloudfront";
 import { IFunction, Runtime } from "@aws-cdk/aws-lambda";
 import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
@@ -22,6 +23,7 @@ import * as path from "path";
 import { HttpOrigin, S3Origin } from "@aws-cdk/aws-cloudfront-origins";
 import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
 import { HttpApi, IHttpApi } from "@aws-cdk/aws-apigatewayv2";
+import { overrideProps } from "./utils";
 
 interface Domain {
   /**
@@ -68,6 +70,10 @@ interface ServerlessUIProps {
   readonly apiEnvironment?: {
     [key: string]: string;
   };
+  /**
+   * Optional user provided props to merge with the default props for CloudFront Distribution
+   */
+  cloudFrontDistributionProps?: Partial<DistributionProps>;
 }
 
 export class ServerlessUI extends Construct {
@@ -147,10 +153,7 @@ export class ServerlessUI extends Construct {
       },
     };
 
-    /**
-     * Creating a Cloudfront distribution for the website bucket with an aggressive caching policy
-     */
-    const distribution = new Distribution(this, "Distribution", {
+    const defaultDistributionProps = {
       defaultBehavior: {
         origin: new S3Origin(websiteBucket),
         allowedMethods: AllowedMethods.ALLOW_ALL,
@@ -169,7 +172,21 @@ export class ServerlessUI extends Construct {
           ]
         : undefined,
       enableLogging: true,
-    });
+    };
+
+    const mergedDistributionProps = overrideProps(
+      defaultDistributionProps,
+      props.cloudFrontDistributionProps ?? {}
+    );
+
+    /**
+     * Creating a Cloudfront distribution for the website bucket with an aggressive caching policy
+     */
+    const distribution = new Distribution(
+      this,
+      "Distribution",
+      mergedDistributionProps
+    );
 
     new BucketDeployment(this, "BucketDeployment", {
       sources: props.uiSources,
