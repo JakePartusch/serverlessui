@@ -28,17 +28,17 @@
     "prepack": "yarn rimraf && yarn build"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigatewayv2": "1.95.1",
-    "@aws-cdk/aws-apigatewayv2-integrations": "1.95.1",
-    "@aws-cdk/aws-certificatemanager": "1.95.1",
-    "@aws-cdk/aws-cloudfront": "1.95.1",
-    "@aws-cdk/aws-cloudfront-origins": "1.95.1",
-    "@aws-cdk/aws-lambda-nodejs": "1.95.1",
-    "@aws-cdk/aws-route53": "1.95.1",
-    "@aws-cdk/aws-route53-targets": "1.95.1",
-    "@aws-cdk/aws-s3": "1.95.1",
-    "@aws-cdk/aws-s3-deployment": "1.95.1",
-    "@aws-cdk/core": "1.95.1",
+    "@aws-cdk/aws-apigatewayv2": "1.98.0",
+    "@aws-cdk/aws-apigatewayv2-integrations": "1.98.0",
+    "@aws-cdk/aws-certificatemanager": "1.98.0",
+    "@aws-cdk/aws-cloudfront": "1.98.0",
+    "@aws-cdk/aws-cloudfront-origins": "1.98.0",
+    "@aws-cdk/aws-lambda-nodejs": "1.98.0",
+    "@aws-cdk/aws-route53": "1.98.0",
+    "@aws-cdk/aws-route53-targets": "1.98.0",
+    "@aws-cdk/aws-s3": "1.98.0",
+    "@aws-cdk/aws-s3-deployment": "1.98.0",
+    "@aws-cdk/core": "1.98.0",
     "deepmerge": "^4.2.2"
   },
   "files": [
@@ -48,10 +48,10 @@
     "readme.md"
   ],
   "devDependencies": {
-    "@rollup/plugin-typescript": "^8.1.1",
+    "@rollup/plugin-typescript": "^8.2.1",
     "@tsconfig/node10": "^1.0.7",
-    "rollup": "^2.38.5",
-    "typescript": "^4.1.3"
+    "rollup": "^2.45.1",
+    "typescript": "^4.2.4"
   },
   "gitHead": "4a136cf3777ae864939139dcaee277e9213fe925"
 }
