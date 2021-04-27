@@ -28,13 +28,13 @@
     "prepack": "yarn rimraf && yarn build"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.98.0",
+    "@aws-cdk/core": "1.100.0",
     "@serverlessui/construct": "^0.9.0"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.2.1",
     "@tsconfig/node10": "^1.0.7",
-    "rollup": "^2.45.1",
+    "rollup": "^2.45.2",
     "typescript": "^4.2.4"
   },
   "files": [
