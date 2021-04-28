@@ -6,6 +6,15 @@ const serverlessApplicationPath = require.resolve(
   '@serverlessui/serverless-app'
 )
 
+const readFunctionFiles = async (functionsDir: string): Promise<string> => {
+  try {
+    const files = await glob(`${functionsDir}/**/*.{js,ts}`)
+    return files.join(',')
+  } catch (e) {
+    return ''
+  }
+}
+
 export const command: GluegunCommand = {
   name: 'deploy',
   alias: 'd',
@@ -17,12 +26,10 @@ export const command: GluegunCommand = {
 
     const { functions = './functions', dir = './dist', prod = false } = options
 
-    const files = await glob(`${functions}/**/*.{js,ts}`)
-
+    const apiFiles = await readFunctionFiles(functions)
     const explorerSync = cosmiconfigSync('serverlessui')
     const configResult = explorerSync.search()
 
-    const apiFiles = files.join(',')
     const prodCli = prod ? '-c prod=true' : ''
 
     if (apiFiles.length === 0) {
