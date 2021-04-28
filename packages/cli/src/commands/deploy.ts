@@ -1,28 +1,35 @@
 import { GluegunCommand } from 'gluegun'
-import * as glob from 'glob'
+import glob from 'tiny-glob'
 import * as child_process from 'child_process'
 import { cosmiconfigSync } from 'cosmiconfig'
 const serverlessApplicationPath = require.resolve(
   '@serverlessui/serverless-app'
 )
 
+const readFunctionFiles = async (functionsDir: string): Promise<string> => {
+  try {
+    const files = await glob(`${functionsDir}/**/*.{js,ts}`)
+    return files.join(',')
+  } catch (e) {
+    return ''
+  }
+}
+
 export const command: GluegunCommand = {
   name: 'deploy',
   alias: 'd',
   description: 'Deploy your website and serverless functions',
-  run: async toolbox => {
+  run: async (toolbox) => {
     const { parameters } = toolbox
 
     const { options } = parameters
 
     const { functions = './functions', dir = './dist', prod = false } = options
 
-    const files = glob.sync(`${functions}/**/*.{js,ts}`)
-
+    const apiFiles = await readFunctionFiles(functions)
     const explorerSync = cosmiconfigSync('serverlessui')
     const configResult = explorerSync.search()
 
-    const apiFiles = files.join(',')
     const prodCli = prod ? '-c prod=true' : ''
 
     if (apiFiles.length === 0) {
@@ -59,7 +66,7 @@ export const command: GluegunCommand = {
     child_process.execSync(
       `npx cdk bootstrap ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}"`,
       {
-        stdio: 'inherit'
+        stdio: 'inherit',
       }
     )
 
@@ -69,7 +76,7 @@ export const command: GluegunCommand = {
     child_process.execSync(
       `npx cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}" --quiet`,
       {
-        stdio: 'inherit'
+        stdio: 'inherit',
       }
     )
 
@@ -80,8 +87,8 @@ export const command: GluegunCommand = {
     child_process.execSync(
       `npx cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --require-approval never --outputs-file cdk.out/outputs.json`,
       {
-        stdio: 'inherit'
+        stdio: 'inherit',
       }
     )
-  }
+  },
 }
