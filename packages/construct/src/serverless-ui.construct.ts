@@ -14,6 +14,9 @@ import {
   BehaviorOptions,
   AllowedMethods,
   CachePolicy,
+  Function,
+  FunctionCode,
+  FunctionEventType
 } from "@aws-cdk/aws-cloudfront";
 import { IFunction, Runtime } from "@aws-cdk/aws-lambda";
 import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
@@ -134,6 +137,8 @@ export class ServerlessUI extends Construct {
       });
     });
 
+    
+
     const restApis = lambdas.map((lambda, i) => {
       return new LambdaRestApi(this, `LambdaRestApi-${functionFiles[i].name}`, {
         handler: lambda,
@@ -160,7 +165,30 @@ export class ServerlessUI extends Construct {
       };
       return newAdditionalBehaviors;
     }, {} as Record<string, BehaviorOptions>);
-
+    /**
+     * Creating a CloudFront function to rewrite url's ending in / to serve /index.html
+     */
+    const cfFunction = new Function(this, 'CloudFrontFunction', {
+      code: FunctionCode.fromInline(`
+      function handler(event) {
+        var request = event.request
+        var olduri = request.uri;
+  
+        // Match any '/' that occurs at the end of a URI. Replace it with a default index
+        var newuri = olduri.replace(/\\/$\/, '\/index.html');
+        
+        // Log the URI as received by CloudFront and the new URI to be used to fetch from origin
+        console.log("Old URI: " + olduri);
+        console.log("New URI: " + newuri);
+        
+        // Replace the received URI with the URI that includes the index page
+        request.uri = newuri;
+        
+        // Return to CloudFront
+        return request;
+      }
+      `),
+    });
     /**
      * Creating a Cloudfront distribution for the website bucket with an aggressive caching policy
      */
@@ -171,6 +199,10 @@ export class ServerlessUI extends Construct {
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: CachePolicy.CACHING_OPTIMIZED,
         compress: true,
+        functionAssociations: [{
+          function: cfFunction,
+          eventType: FunctionEventType.VIEWER_REQUEST,
+        }],
       },
       defaultRootObject: "index.html",
       additionalBehaviors,
