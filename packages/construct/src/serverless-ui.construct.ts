@@ -14,6 +14,9 @@ import {
   BehaviorOptions,
   AllowedMethods,
   CachePolicy,
+  Function,
+  FunctionCode,
+  FunctionEventType
 } from "@aws-cdk/aws-cloudfront";
 import { IFunction, Runtime } from "@aws-cdk/aws-lambda";
 import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
@@ -134,6 +137,8 @@ export class ServerlessUI extends Construct {
       });
     });
 
+    
+
     const restApis = lambdas.map((lambda, i) => {
       return new LambdaRestApi(this, `LambdaRestApi-${functionFiles[i].name}`, {
         handler: lambda,
@@ -160,7 +165,27 @@ export class ServerlessUI extends Construct {
       };
       return newAdditionalBehaviors;
     }, {} as Record<string, BehaviorOptions>);
-
+    /**
+     * URL rewrite to append index.html to the URI for single page applications
+     */
+    const cfFunction = new Function(this, 'CloudFrontFunction', {
+      code: FunctionCode.fromInline(`
+      function handler(event) {
+        var request = event.request;
+        var uri = request.uri;
+        
+        // Check whether the URI is missing a file name.
+        if (uri.endsWith('/')) {
+            request.uri += 'index.html';
+        } 
+        // Check whether the URI is missing a file extension.
+        else if (!uri.includes('.')) {
+            request.uri += '/index.html';
+        }
+    
+        return request;
+      }`),
+    });
     /**
      * Creating a Cloudfront distribution for the website bucket with an aggressive caching policy
      */
@@ -171,6 +196,10 @@ export class ServerlessUI extends Construct {
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: CachePolicy.CACHING_OPTIMIZED,
         compress: true,
+        functionAssociations: [{
+          function: cfFunction,
+          eventType: FunctionEventType.VIEWER_REQUEST,
+        }],
       },
       defaultRootObject: "index.html",
       additionalBehaviors,
