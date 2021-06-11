@@ -166,28 +166,25 @@ export class ServerlessUI extends Construct {
       return newAdditionalBehaviors;
     }, {} as Record<string, BehaviorOptions>);
     /**
-     * Creating a CloudFront function to rewrite url's ending in / to serve /index.html
+     * URL rewrite to append index.html to the URI for single page applications
      */
     const cfFunction = new Function(this, 'CloudFrontFunction', {
       code: FunctionCode.fromInline(`
       function handler(event) {
-        var request = event.request
-        var olduri = request.uri;
-  
-        // Match any '/' that occurs at the end of a URI. Replace it with a default index
-        var newuri = olduri.replace(/\\/$\/, '\/index.html');
+        var request = event.request;
+        var uri = request.uri;
         
-        // Log the URI as received by CloudFront and the new URI to be used to fetch from origin
-        console.log("Old URI: " + olduri);
-        console.log("New URI: " + newuri);
-        
-        // Replace the received URI with the URI that includes the index page
-        request.uri = newuri;
-        
-        // Return to CloudFront
+        // Check whether the URI is missing a file name.
+        if (uri.endsWith('/')) {
+            request.uri += 'index.html';
+        } 
+        // Check whether the URI is missing a file extension.
+        else if (!uri.includes('.')) {
+            request.uri += '/index.html';
+        }
+    
         return request;
-      }
-      `),
+      }`),
     });
     /**
      * Creating a Cloudfront distribution for the website bucket with an aggressive caching policy
