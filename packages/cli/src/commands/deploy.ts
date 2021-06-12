@@ -32,6 +32,16 @@ export const command: GluegunCommand = {
 
     const prodCli = prod ? '-c prod=true' : ''
 
+    const isPrivateS3Cli = configResult?.config?.__experimental_privateS3
+      ? '-c isPrivateS3=true'
+      : ''
+
+    if (isPrivateS3Cli) {
+      toolbox.print.info(
+        'Using experimental feature - Private S3 Bucket with Origin Access Identity'
+      )
+    }
+
     if (apiFiles.length === 0) {
       toolbox.print.info(`No functions found in directory ${functions}`)
     }
@@ -71,21 +81,21 @@ export const command: GluegunCommand = {
     )
 
     toolbox.print.highlight(
-      `npx cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}" --quiet`
+      `npx cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" ${isPrivateS3Cli} -a "node ${serverlessApplicationPath}" --quiet`
     )
     child_process.execSync(
-      `npx cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" -a "node ${serverlessApplicationPath}" --quiet`,
+      `npx cdk synth ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry="${dir}" ${isPrivateS3Cli} -a "node ${serverlessApplicationPath}" --quiet`,
       {
         stdio: 'inherit',
       }
     )
 
     toolbox.print.highlight(
-      `npx cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --require-approval never --outputs-file cdk.out/outputs.json`
+      `npx cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} ${isPrivateS3Cli} -a "node ${serverlessApplicationPath}" --require-approval never --outputs-file cdk.out/outputs.json`
     )
 
     child_process.execSync(
-      `npx cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} -a "node ${serverlessApplicationPath}" --require-approval never --outputs-file cdk.out/outputs.json`,
+      `npx cdk deploy ${prodCli} ${domainConfigCli} -c apiEntries="${apiFiles}" -c uiEntry=${dir} ${isPrivateS3Cli} -a "node ${serverlessApplicationPath}" --require-approval never --outputs-file cdk.out/outputs.json`,
       {
         stdio: 'inherit',
       }

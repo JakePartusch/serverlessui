@@ -78,6 +78,10 @@ interface ServerlessUIProps {
    * Optional user provided props to merge with the default props for CloudFront Distribution
    */
   cloudFrontDistributionProps?: Partial<DistributionProps>;
+  /**
+   * Experimental - Make the S3 bucket private and use a Cloudfront function to rewrite website URLs
+   */
+  isPrivateS3?: boolean;
 }
 
 export class ServerlessUI extends Construct {
@@ -104,23 +108,55 @@ export class ServerlessUI extends Construct {
     const websiteBucket = new Bucket(this, "WebsiteBucket", {
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
+      ...(!props.isPrivateS3
+        ? {
+            publicReadAccess: true,
+            websiteIndexDocument: "index.html",
+          }
+        : {}),
     });
 
-    // Apply bucket policy to enforce encryption of data in transit
-    websiteBucket.addToResourcePolicy(
-      new PolicyStatement({
-        sid: "HttpsOnly",
-        resources: [`${websiteBucket.bucketArn}/*`],
-        actions: ["*"],
-        principals: [new AnyPrincipal()],
-        effect: Effect.DENY,
-        conditions: {
-          Bool: {
-            "aws:SecureTransport": "false",
+    if (props.isPrivateS3) {
+      // Apply bucket policy to enforce encryption of data in transit
+      websiteBucket.addToResourcePolicy(
+        new PolicyStatement({
+          sid: "HttpsOnly",
+          resources: [`${websiteBucket.bucketArn}/*`],
+          actions: ["*"],
+          principals: [new AnyPrincipal()],
+          effect: Effect.DENY,
+          conditions: {
+            Bool: {
+              "aws:SecureTransport": "false",
+            },
           },
-        },
-      })
-    );
+        })
+      );
+    }
+
+    /**
+     * URL rewrite to append index.html to the URI for single page applications
+     */
+    const createRewriteFunction = () => {
+      return new Function(this, "CloudFrontFunction", {
+        code: FunctionCode.fromInline(`
+         function handler(event) {
+           var request = event.request;
+           var uri = request.uri;
+           
+           // Check whether the URI is missing a file name.
+           if (uri.endsWith('/')) {
+               request.uri += 'index.html';
+           } 
+           // Check whether the URI is missing a file extension.
+           else if (!uri.includes('.')) {
+               request.uri += '/index.html';
+           }
+       
+           return request;
+         }`),
+      });
+    };
 
     const functionFiles = props.apiEntries.map((apiEntry) => ({
       name: path.basename(apiEntry).split(".")[0],
@@ -170,27 +206,6 @@ export class ServerlessUI extends Construct {
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
     };
-    /**
-     * URL rewrite to append index.html to the URI for single page applications
-     */
-    const cfFunction = new Function(this, "CloudFrontFunction", {
-      code: FunctionCode.fromInline(`
-     function handler(event) {
-       var request = event.request;
-       var uri = request.uri;
-       
-       // Check whether the URI is missing a file name.
-       if (uri.endsWith('/')) {
-           request.uri += 'index.html';
-       } 
-       // Check whether the URI is missing a file extension.
-       else if (!uri.includes('.')) {
-           request.uri += '/index.html';
-       }
-   
-       return request;
-     }`),
-    });
 
     const defaultDistributionProps = {
       defaultBehavior: {
@@ -200,10 +215,14 @@ export class ServerlessUI extends Construct {
         cachePolicy: CachePolicy.CACHING_OPTIMIZED,
         compress: true,
         functionAssociations: [
-          {
-            function: cfFunction,
-            eventType: FunctionEventType.VIEWER_REQUEST,
-          },
+          ...(props.isPrivateS3
+            ? [
+                {
+                  function: createRewriteFunction(),
+                  eventType: FunctionEventType.VIEWER_REQUEST,
+                },
+              ]
+            : []),
         ],
       },
       defaultRootObject: "index.html",
