@@ -6,14 +6,13 @@ import {
   IHostedZone,
 } from "@aws-cdk/aws-route53";
 import { CloudFrontTarget } from "@aws-cdk/aws-route53-targets";
-import { IRestApi, LambdaRestApi } from "@aws-cdk/aws-apigateway";
 import {
   IDistribution,
   Distribution,
   ViewerProtocolPolicy,
-  BehaviorOptions,
   AllowedMethods,
   CachePolicy,
+  DistributionProps,
 } from "@aws-cdk/aws-cloudfront";
 import { IFunction, Runtime } from "@aws-cdk/aws-lambda";
 import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
@@ -23,6 +22,9 @@ import { Bucket, IBucket } from "@aws-cdk/aws-s3";
 import { PolicyStatement, Effect, AnyPrincipal } from "@aws-cdk/aws-iam";
 import * as path from "path";
 import { HttpOrigin, S3Origin } from "@aws-cdk/aws-cloudfront-origins";
+import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
+import { HttpApi, IHttpApi } from "@aws-cdk/aws-apigatewayv2";
+import { overrideProps } from "./utils";
 
 interface Domain {
   /**
@@ -69,6 +71,10 @@ interface ServerlessUIProps {
   readonly apiEnvironment?: {
     [key: string]: string;
   };
+  /**
+   * Optional user provided props to merge with the default props for CloudFront Distribution
+   */
+  cloudFrontDistributionProps?: Partial<DistributionProps>;
 }
 
 export class ServerlessUI extends Construct {
@@ -77,9 +83,9 @@ export class ServerlessUI extends Construct {
    */
   readonly websiteBucket: IBucket;
   /**
-   * The API Gateway APIs for the function deployments
+   * The API Gateway API for the function deployments
    */
-  readonly restApis: IRestApi[];
+  readonly httpApi: IHttpApi;
   /**
    * The Node.js Lambda Functions deployed
    */
@@ -134,37 +140,35 @@ export class ServerlessUI extends Construct {
       });
     });
 
-    const restApis = lambdas.map((lambda, i) => {
-      return new LambdaRestApi(this, `LambdaRestApi-${functionFiles[i].name}`, {
+    const httpApi = new HttpApi(this, "HttpApi");
+
+    lambdas.forEach((lambda, i) => {
+      const lambdaFileName = functionFiles[i].name;
+      const lambdaProxyIntegration = new LambdaProxyIntegration({
         handler: lambda,
+      });
+
+      httpApi.addRoutes({
+        path: `/api/${lambdaFileName}`,
+        integration: lambdaProxyIntegration,
       });
     });
 
     /**
      * Build a Cloudfront behavior for each api function that allows all HTTP Methods and has caching disabled.
      */
-    const additionalBehaviors: Record<
-      string,
-      BehaviorOptions
-    > = restApis.reduce((previous, current, i) => {
-      const functionName = functionFiles[i].name;
-      const restApiOrigin = `${current.restApiId}.execute-api.${
-        Stack.of(this).region
-      }.amazonaws.com`;
-      const newAdditionalBehaviors = { ...previous };
-      newAdditionalBehaviors[`/api/${functionName}`] = {
-        origin: new HttpOrigin(restApiOrigin, { originPath: "/prod" }),
+    const additionalBehaviors = {
+      "/api/*": {
+        origin: new HttpOrigin(
+          `${httpApi.apiId}.execute-api.${Stack.of(this).region}.amazonaws.com`
+        ),
         cachePolicy: CachePolicy.CACHING_DISABLED,
         allowedMethods: AllowedMethods.ALLOW_ALL,
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-      };
-      return newAdditionalBehaviors;
-    }, {} as Record<string, BehaviorOptions>);
+      },
+    };
 
-    /**
-     * Creating a Cloudfront distribution for the website bucket with an aggressive caching policy
-     */
-    const distribution = new Distribution(this, "Distribution", {
+    const defaultDistributionProps = {
       defaultBehavior: {
         origin: new S3Origin(websiteBucket),
         allowedMethods: AllowedMethods.ALLOW_ALL,
@@ -183,7 +187,21 @@ export class ServerlessUI extends Construct {
           ]
         : undefined,
       enableLogging: true,
-    });
+    };
+
+    const mergedDistributionProps = overrideProps(
+      defaultDistributionProps,
+      props.cloudFrontDistributionProps ?? {}
+    );
+
+    /**
+     * Creating a Cloudfront distribution for the website bucket with an aggressive caching policy
+     */
+    const distribution = new Distribution(
+      this,
+      "Distribution",
+      mergedDistributionProps
+    );
 
     new BucketDeployment(this, "BucketDeployment", {
       sources: props.uiSources,
@@ -232,7 +250,7 @@ export class ServerlessUI extends Construct {
     });
 
     this.websiteBucket = websiteBucket;
-    this.restApis = restApis;
+    this.httpApi = httpApi;
     this.functions = lambdas;
     this.distribution = distribution;
   }
