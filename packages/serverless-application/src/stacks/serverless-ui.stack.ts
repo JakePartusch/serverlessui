@@ -11,6 +11,7 @@ interface ServerlessUIStackProps extends StackProps {
   certificateArn?: string;
   apiEntries: string[];
   uiEntry: string;
+  isPrivateS3: boolean;
 }
 
 export class ServerlessUIStack extends Stack {
