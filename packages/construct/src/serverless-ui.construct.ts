@@ -13,12 +13,16 @@ import {
   AllowedMethods,
   CachePolicy,
   DistributionProps,
+  Function,
+  FunctionCode,
+  FunctionEventType,
 } from "@aws-cdk/aws-cloudfront";
 import { IFunction, Runtime } from "@aws-cdk/aws-lambda";
 import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
 import { BucketDeployment, ISource } from "@aws-cdk/aws-s3-deployment";
 import { CfnOutput, Construct, RemovalPolicy, Stack } from "@aws-cdk/core";
 import { Bucket, IBucket } from "@aws-cdk/aws-s3";
+import { PolicyStatement, Effect, AnyPrincipal } from "@aws-cdk/aws-iam";
 import * as path from "path";
 import { HttpOrigin, S3Origin } from "@aws-cdk/aws-cloudfront-origins";
 import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
@@ -74,6 +78,10 @@ interface ServerlessUIProps {
    * Optional user provided props to merge with the default props for CloudFront Distribution
    */
   cloudFrontDistributionProps?: Partial<DistributionProps>;
+  /**
+   * Experimental - Make the S3 bucket private and use a Cloudfront function to rewrite website URLs
+   */
+  isPrivateS3?: boolean;
 }
 
 export class ServerlessUI extends Construct {
@@ -100,9 +108,55 @@ export class ServerlessUI extends Construct {
     const websiteBucket = new Bucket(this, "WebsiteBucket", {
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
-      publicReadAccess: true,
-      websiteIndexDocument: "index.html",
+      ...(!props.isPrivateS3
+        ? {
+            publicReadAccess: true,
+            websiteIndexDocument: "index.html",
+          }
+        : {}),
     });
+
+    if (props.isPrivateS3) {
+      // Apply bucket policy to enforce encryption of data in transit
+      websiteBucket.addToResourcePolicy(
+        new PolicyStatement({
+          sid: "HttpsOnly",
+          resources: [`${websiteBucket.bucketArn}/*`],
+          actions: ["*"],
+          principals: [new AnyPrincipal()],
+          effect: Effect.DENY,
+          conditions: {
+            Bool: {
+              "aws:SecureTransport": "false",
+            },
+          },
+        })
+      );
+    }
+
+    /**
+     * URL rewrite to append index.html to the URI for single page applications
+     */
+    const createRewriteFunction = () => {
+      return new Function(this, "CloudFrontFunction", {
+        code: FunctionCode.fromInline(`
+         function handler(event) {
+           var request = event.request;
+           var uri = request.uri;
+           
+           // Check whether the URI is missing a file name.
+           if (uri.endsWith('/')) {
+               request.uri += 'index.html';
+           } 
+           // Check whether the URI is missing a file extension.
+           else if (!uri.includes('.')) {
+               request.uri += '/index.html';
+           }
+       
+           return request;
+         }`),
+      });
+    };
 
     const functionFiles = props.apiEntries.map((apiEntry) => ({
       name: path.basename(apiEntry).split(".")[0],
@@ -160,6 +214,16 @@ export class ServerlessUI extends Construct {
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: CachePolicy.CACHING_OPTIMIZED,
         compress: true,
+        functionAssociations: [
+          ...(props.isPrivateS3
+            ? [
+                {
+                  function: createRewriteFunction(),
+                  eventType: FunctionEventType.VIEWER_REQUEST,
+                },
+              ]
+            : []),
+        ],
       },
       defaultRootObject: "index.html",
       additionalBehaviors,
