@@ -27,12 +27,23 @@
 
 - **Own your code** Skip the 3rd Party services — get all of the benefits and security of a hosted AWS application, without going through a middleman. Deploy to a new AWS account, or an existing account and get up and running in five minutes!
 
-## What’s In This Document
-
-- [Get Up and Running in 5 Minutes](#-get-up-and-running-in-5-minutes)
-- [CLI Reference](#-cli-reference)
+- [🚀 Get Up and Running in 5 Minutes](#-get-up-and-running-in-5-minutes)
+- [📖 CLI Reference](#-cli-reference)
+  - [`deploy`](#deploy)
+    - [Options](#options)
+    - [Examples](#examples)
+  - [`configure-domain`](#configure-domain)
+    - [Options](#options-1)
+    - [Examples](#examples-1)
+    - [Additional Steps](#additional-steps)
 - [Continuous Integration](#continuous-integration)
-- [Advanced Use Cases](#-advanced-use-cases)
+  - [Examples](#examples-2)
+    - [GitHub Actions](#github-actions)
+- [👩‍🔬 Experimental Features](#-experimental-features)
+  - [\_\_experimental_privateS3](#__experimental_privates3)
+- [👩‍💻 Advanced Use Cases](#-advanced-use-cases)
+  - [Examples](#examples-3)
+    - [Serverless UI Advanced Example](#serverless-ui-advanced-example)
 - [FAQ](#faq)
 - [License](#license)
 
@@ -231,7 +242,21 @@ jobs:
             });
 ```
 
-## 👩‍🔬 Advanced Use Cases
+## 👩‍🔬 Experimental Features
+
+In order to use experimental features, a `serverlessui.config.js` file must exist at the base of the project.
+
+### \_\_experimental_privateS3
+
+This experimental feature allows the configuration of a private S3 bucket — which may be desired for enhanced security. This feature can be enabled in `serverlessui.config.js`:
+
+```javascript
+module.exports = {
+  __experimental_privateS3: true,
+};
+```
+
+## 👩‍💻 Advanced Use Cases
 
 For existing serverless projects or those that may have additional CloudFormation and/or CDK infrastructure, Serverless UI provides CDK constructs for each of the cli actions:
 
@@ -241,7 +266,7 @@ import { ServerlessUI, DomainCertificate } from '@serverlessui/construct;
 
 ### Examples
 
-#### Serverless UI
+#### Serverless UI Advanced Example
 
 For a full-featured example, check out:
 https://github.com/JakePartusch/serverlessui-advanced-example
