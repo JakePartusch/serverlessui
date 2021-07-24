@@ -27,6 +27,9 @@
 
 - **Own your code** Skip the 3rd Party services — get all of the benefits and security of a hosted AWS application, without going through a middleman. Deploy to a new AWS account, or an existing account and get up and running in five minutes!
 
+## What's in this Document
+
+- [What's in this Document](#whats-in-this-document)
 - [🚀 Get Up and Running in 5 Minutes](#-get-up-and-running-in-5-minutes)
 - [📖 CLI Reference](#-cli-reference)
   - [`deploy`](#deploy)
@@ -37,13 +40,11 @@
     - [Examples](#examples-1)
     - [Additional Steps](#additional-steps)
 - [Continuous Integration](#continuous-integration)
-  - [Examples](#examples-2)
-    - [GitHub Actions](#github-actions)
+  - [GitHub Actions](#github-actions)
 - [👩‍🔬 Experimental Features](#-experimental-features)
   - [\_\_experimental_privateS3](#__experimental_privates3)
 - [👩‍💻 Advanced Use Cases](#-advanced-use-cases)
-  - [Examples](#examples-3)
-    - [Serverless UI Advanced Example](#serverless-ui-advanced-example)
+  - [Serverless UI Advanced Example](#serverless-ui-advanced-example)
 - [FAQ](#faq)
 - [License](#license)
 
@@ -191,9 +192,7 @@ A minute or two after running this command, the deploy will "hang" while trying 
 
 Since Serverless UI is a command-line tool available via npm, it will work in almost any CI environment.
 
-### Examples
-
-#### GitHub Actions
+### GitHub Actions
 
 > Note: Checkout the action in this repo for a live example https://github.com/JakePartusch/serverlessui/actions
 
@@ -264,9 +263,7 @@ For existing serverless projects or those that may have additional CloudFormatio
 import { ServerlessUI, DomainCertificate } from '@serverlessui/construct;
 ```
 
-### Examples
-
-#### Serverless UI Advanced Example
+### Serverless UI Advanced Example
 
 For a full-featured example, check out:
 https://github.com/JakePartusch/serverlessui-advanced-example
