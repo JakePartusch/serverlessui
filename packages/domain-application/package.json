@@ -28,7 +28,7 @@
     "prepack": "yarn rimraf && yarn build"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.108.0",
+    "@aws-cdk/core": "1.115.0",
     "@serverlessui/construct": "^0.11.0"
   },
   "devDependencies": {
