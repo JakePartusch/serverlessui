@@ -3,7 +3,7 @@ name: Serverless UI Build & Deploy Example Sites
 on: [pull_request]
 
 jobs:
-  deploy-simple-preview:
+  deploy-docs-preview:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,8 +21,8 @@ jobs:
       - run: npm install -g lerna
       - run: lerna bootstrap
       - run: lerna run prepack
-      - run: cd examples/simple && yarn install
-      - run: yarn sui deploy --compiled-build --dir="examples/simple/dist" --functions="examples/simple/functions"
+      - run: cd docs && yarn install && yarn build
+      - run: yarn sui deploy --compiled-build --dir="docs/dist"
       - name: Add PR Comment
         uses: actions/github-script@v3
         with:
