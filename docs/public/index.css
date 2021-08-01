@@ -422,6 +422,7 @@ nav h4 {
 
 .nav-groups {
   padding-bottom: 2rem;
+  padding-right: 2rem;
   max-height: calc(100% - 3rem);
   overflow-y: auto;
   overflow-x: hidden;
