@@ -60,7 +60,7 @@ jobs:
       - run: lerna bootstrap
       - run: lerna run prepack
       - run: cd examples/simple && yarn install
-      - run: yarn sui deploy --compiled-build --dir="examples/simple/public" --functions="examples/simple/functions"
+      - run: yarn sui deploy --compiled-build --dir="examples/simple/dist" --functions="examples/simple/functions"
   deploy-privateS3-preview:
     runs-on: ubuntu-latest
 
