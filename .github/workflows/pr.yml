@@ -3,6 +3,44 @@ name: Serverless UI Build & Deploy Example Sites
 on: [pull_request]
 
 jobs:
+  deploy-docs-preview:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14.x"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+      - run: npm install -g lerna
+      - run: lerna bootstrap
+      - run: lerna run prepack
+      - run: cd docs && yarn install && yarn build
+      - run: yarn sui deploy --compiled-build --dir="docs/dist"
+      - name: Add PR Comment
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const outputs = require(`${process.env.GITHUB_WORKSPACE}/cdk.out/outputs.json`);
+            const stackName = Object.keys(outputs).find((key) =>
+              key.startsWith("ServerlessUI")
+            );
+            const baseUrlKey = Object.keys(outputs[stackName]).find((key) =>
+              key.startsWith("ServerlessUIBaseUrl")
+            );
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `✅ Your deploy preview is ready: ${outputs[stackName][baseUrlKey]}`,
+            });
   deploy-simple-preview:
     runs-on: ubuntu-latest
 
@@ -23,25 +61,7 @@ jobs:
       - run: lerna run prepack
       - run: cd examples/simple && yarn install
       - run: yarn sui deploy --compiled-build --dir="examples/simple/dist" --functions="examples/simple/functions"
-      - name: Add PR Comment
-        uses: actions/github-script@v3
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            const outputs = require(`${process.env.GITHUB_WORKSPACE}/cdk.out/outputs.json`);
-            const stackName = Object.keys(outputs).find((key) =>
-              key.startsWith("ServerlessUI")
-            );
-            const baseUrlKey = Object.keys(outputs[stackName]).find((key) =>
-              key.startsWith("ServerlessUIBaseUrl")
-            );
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `✅ Your deploy preview is ready: ${outputs[stackName][baseUrlKey]}`,
-            });
-  deploy-gatsby-preview:
+  deploy-privateS3-preview:
     runs-on: ubuntu-latest
 
     steps:
@@ -61,23 +81,3 @@ jobs:
       - run: lerna run prepack
       - run: cd examples/gatsby && yarn install && yarn build
       - run: yarn sui deploy --compiled-build --dir="examples/gatsby/public"
-  deploy-privateS3-preview:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: "14.x"
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-2
-      - run: npm install -g lerna
-      - run: lerna bootstrap
-      - run: lerna run prepack
-      - run: cd examples/private-s3 && yarn install && yarn build
-      - run: yarn sui deploy --compiled-build --dir="examples/private-s3/public"
