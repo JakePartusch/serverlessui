@@ -25,7 +25,7 @@ import { Bucket, IBucket } from "@aws-cdk/aws-s3";
 import { PolicyStatement, Effect, AnyPrincipal } from "@aws-cdk/aws-iam";
 import * as path from "path";
 import { HttpOrigin, S3Origin } from "@aws-cdk/aws-cloudfront-origins";
-import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
+import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
 import { HttpApi, IHttpApi } from "@aws-cdk/aws-apigatewayv2";
 import { overrideProps } from "./utils";
 
@@ -183,9 +183,10 @@ export class ServerlessUI extends Construct {
 
     lambdas.forEach((lambda, i) => {
       const lambdaFileName = functionFiles[i].name;
-      const lambdaProxyIntegration = new LambdaProxyIntegration({
-        handler: lambda,
-      });
+      const lambdaProxyIntegration = new HttpLambdaIntegration(
+        `LambdaIntegration${i}`,
+        lambda
+      );
 
       httpApi.addRoutes({
         path: `/api/${lambdaFileName}`,
